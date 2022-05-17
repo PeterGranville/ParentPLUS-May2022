@@ -1,0 +1,68 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"PLUS loan total 1995-96 by Percent of poverty level 1994. "
+
+"","PLUS loan total 1995-96"
+"","0 <= X <= 0","105 <= X <= 28000","Total"
+"","(%)","(%)"
+
+"ESTIMATES"
+"Total","97.5006","2.4994","100%"
+"Percent of poverty level 1994"
+"0 <= X <= 100","99.1458","0.8542","100%"
+"101 <= X <= 200","98.8277","1.1723","100%"
+"201 <= X <= 300","96.9597","3.0403","100%"
+"301 <= X <= 400","96.0056","3.9944","100%"
+"401 <= X <= 1000","96.2008","3.7992","100%"
+
+"STANDARD ERRORS (BRR)"
+"Total","0.13838","0.13838"
+"Percent of poverty level 1994"
+"0 <= X <= 100","0.09344","0.09344"
+"101 <= X <= 200","0.11350","0.11350"
+"201 <= X <= 300","0.29383","0.29383"
+"301 <= X <= 400","0.30685","0.30685"
+"401 <= X <= 1000","0.20638","0.20638"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","0.14193","5.53669"
+"Percent of poverty level 1994"
+"0 <= X <= 100","0.09425","10.93949"
+"101 <= X <= 200","0.11485","9.68203"
+"201 <= X <= 300","0.30304","9.66439"
+"301 <= X <= 400","0.31961","7.68185"
+"401 <= X <= 1000","0.21453","5.43219"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","16260718","416832","16677550"
+"Percent of poverty level 1994"
+"0 <= X <= 100","3533913","30446","3564359"
+"101 <= X <= 200","3561357","42245","3603602"
+"201 <= X <= 300","2756005","86418","2842423"
+"301 <= X <= 400","2174440","90470","2264910"
+"401 <= X <= 1000","4235005","167252","4402257"
+
+"CONFIDENCE INTERVALS"
+"","PLUS loan total 1995-96"
+"","0 <= X <= 0","","105 <= X <= 28000","","Total"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","97.5006","97.22 - 97.78","2.4994","2.22 - 2.78","100%"
+"Percent of poverty level 1994"
+"0 <= X <= 100","99.1458","98.96 - 99.33","0.8542","0.67 - 1.04","100%"
+"101 <= X <= 200","98.8277","98.60 - 99.06","1.1723","0.94 - 1.40","100%"
+"201 <= X <= 300","96.9597","96.37 - 97.55","3.0403","2.45 - 3.63","100%"
+"301 <= X <= 400","96.0056","95.39 - 96.62","3.9944","3.38 - 4.61","100%"
+"401 <= X <= 1000","96.2008","95.79 - 96.62","3.7992","3.38 - 4.21","100%"
+"The names of the variables used in this table are: PLUSAMT3 and PCTPOV94. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTA000"
+
+"NOTE: Detail may not sum to totals because of rounding."
+
+"Source: U.S. Department of Education, National Center for Education Statistics, National Postsecondary Student Aid Study: 1996 Undergraduates (NPSAS:UG)."
+
+"Computation by NCES PowerStats on 4/25/2022 at 14:05:52 UTC."
+
+"The table number to retrieve results is bnzvzf"
