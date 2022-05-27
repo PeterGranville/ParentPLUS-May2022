@@ -1,0 +1,83 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"Income percent of poverty level by Aid package with Pell grants. "
+
+"","Income percent of poverty level"
+"","1 <= X <= 100","101 <= X <= 200","201 <= X <= 300","301 <= X <= 400","401 <= X <= 1000","Total"
+"","(%)","(%)","(%)","(%)","(%)"
+
+"ESTIMATES"
+"Total","21.8029","24.6315","17.7826","10.2095","25.5735","100%"
+"Aid package with Pell grants"
+"No Pell grant received","7.3209","12.9324","18.9917","16.3689","44.3862","100%"
+"Pell grant only","45.8489","40.5396","12.4209","1.0352","0.1553 !!","100%"
+"Pell & campus-based only","56.4020","37.5522","5.6924","0.3501 !!","‡","100%"
+"Pell, Direct Subsidized Loans, & Direct Unsubsidized Loans only","40.3600","42.1637","14.9443","2.3385","0.1935 !","100%"
+"Pell, campus-based, Direct Sub. Loans, & Direct Unsub. Loans","50.8091","41.1383","7.4956","0.4501 !","0.1069 !!","100%"
+"Pell & other, no Direct Sub. & Unsub. Loans","42.3790","40.6412","15.5124","1.4439","0.0234 !!","100%"
+"Pell, other, Direct Sub. Loans, & Direct Unsub. Loans","37.0043","39.5946","20.7554","2.5921","0.0536 !","100%"
+
+"STANDARD ERRORS (BRR)"
+"Total","0.26050","0.28600","0.18922","0.15054","0.25269"
+"Aid package with Pell grants"
+"No Pell grant received","0.15732","0.20229","0.21831","0.22684","0.36435"
+"Pell grant only","1.19259","1.17087","0.62062","0.18245","0.07981"
+"Pell & campus-based only","3.47813","3.58497","1.32315","0.25001","‡"
+"Pell, Direct Subsidized Loans, & Direct Unsubsidized Loans only","1.64891","1.37107","0.70521","0.46536","0.07419"
+"Pell, campus-based, Direct Sub. Loans, & Direct Unsub. Loans","3.41869","3.08860","1.74444","0.13524","0.06994"
+"Pell & other, no Direct Sub. & Unsub. Loans","0.90200","0.98378","0.64812","0.21156","0.02126"
+"Pell, other, Direct Sub. Loans, & Direct Unsub. Loans","0.94389","0.85840","0.69114","0.30905","0.02662"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","1.19480","1.16113","1.06410","1.47448","0.98809"
+"Aid package with Pell grants"
+"No Pell grant received","2.14894","1.56417","1.14952","1.38581","0.82086"
+"Pell grant only","2.60113","2.88821","4.99662","17.62413","51.37864"
+"Pell & campus-based only","6.16669","9.54665","23.24399","71.41141","‡"
+"Pell, Direct Subsidized Loans, & Direct Unsubsidized Loans only","4.08552","3.25179","4.71891","19.89946","38.34815"
+"Pell, campus-based, Direct Sub. Loans, & Direct Unsub. Loans","6.72849","7.50786","23.27295","30.04969","65.40816"
+"Pell & other, no Direct Sub. & Unsub. Loans","2.12840","2.42064","4.17806","14.65192","90.69863"
+"Pell, other, Direct Sub. Loans, & Direct Unsub. Loans","2.55075","2.16797","3.32990","11.92303","49.67706"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","3212388","3629143","2620046","1504247","3767929","14733753"
+"Aid package with Pell grants"
+"No Pell grant received","620554","1096218","1609833","1387512","3762403","8476520"
+"Pell grant only","462332","408794","125250","10439","1566","1008381"
+"Pell & campus-based only","90592","60316","9143","562","‡","160618"
+"Pell, Direct Subsidized Loans, & Direct Unsubsidized Loans only","454018","474309","168112","26307","2176","1124922"
+"Pell, campus-based, Direct Sub. Loans, & Direct Unsub. Loans","123725","100175","18252","1096","260","243508"
+"Pell & other, no Direct Sub. & Unsub. Loans","667696","640317","244403","22750","369","1575535"
+"Pell, other, Direct Sub. Loans, & Direct Unsub. Loans","793471","849014","445052","55581","1149","2144267"
+
+"CONFIDENCE INTERVALS"
+"","Income percent of poverty level"
+"","1 <= X <= 100","","101 <= X <= 200","","201 <= X <= 300","","301 <= X <= 400","","401 <= X <= 1000","","Total"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","21.8029","21.29 - 22.31","24.6315","24.07 - 25.19","17.7826","17.41 - 18.15","10.2095","9.91 - 10.50","25.5735","25.08 - 26.07","100%"
+"Aid package with Pell grants"
+"No Pell grant received","7.3209","7.01 - 7.63","12.9324","12.54 - 13.33","18.9917","18.56 - 19.42","16.3689","15.92 - 16.81","44.3862","43.67 - 45.10","100%"
+"Pell grant only","45.8489","43.51 - 48.19","40.5396","38.24 - 42.83","12.4209","11.20 - 13.64","1.0352","0.68 - 1.39","0.1553 !!","-0.00 - 0.31","100%"
+"Pell & campus-based only","56.4020","49.58 - 63.22","37.5522","30.53 - 44.58","5.6924","3.10 - 8.29","0.3501 !!","-0.14 - 0.84","‡","‡","100%"
+"Pell, Direct Subsidized Loans, & Direct Unsubsidized Loans only","40.3600","37.13 - 43.59","42.1637","39.48 - 44.85","14.9443","13.56 - 16.33","2.3385","1.43 - 3.25","0.1935 !","0.05 - 0.34","100%"
+"Pell, campus-based, Direct Sub. Loans, & Direct Unsub. Loans","50.8091","44.11 - 57.51","41.1383","35.08 - 47.19","7.4956","4.08 - 10.91","0.4501 !","0.18 - 0.72","0.1069 !!","-0.03 - 0.24","100%"
+"Pell & other, no Direct Sub. & Unsub. Loans","42.3790","40.61 - 44.15","40.6412","38.71 - 42.57","15.5124","14.24 - 16.78","1.4439","1.03 - 1.86","0.0234 !!","-0.02 - 0.07","100%"
+"Pell, other, Direct Sub. Loans, & Direct Unsub. Loans","37.0043","35.15 - 38.85","39.5946","37.91 - 41.28","20.7554","19.40 - 22.11","2.5921","1.99 - 3.20","0.0536 !","0.00 - 0.11","100%"
+
+"! Interpret data with caution. Estimate is unstable because the standard error represents more than 30 percent of the estimate."
+"!! Interpret data with caution. Estimate is unstable because the standard error represents more than 50 percent of the estimate."
+"‡ Reporting standards not met"
+
+"The names of the variables used in this table are: PCTPOV and PELLPACK. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTA000"
+
+"NOTE: Detail may not sum to totals because of rounding."
+
+"Source: U.S. Department of Education, National Center for Education Statistics, National Postsecondary Student Aid Study-Administrative Collection: 2018, Undergraduates (NPSAS-AC)."
+
+"Computation by NCES PowerStats on 4/25/2022 at 14:30:05 UTC."
+
+"The table number to retrieve results is fcuzvd"
