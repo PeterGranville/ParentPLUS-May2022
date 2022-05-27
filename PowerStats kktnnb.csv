@@ -1,0 +1,68 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"Direct PLUS Loans to parents by Income percent of poverty level. "
+
+"","Direct PLUS Loans to parents"
+"","0 <= X <= 0","2 <= X <= 71806","Total"
+"","(%)","(%)"
+
+"ESTIMATES"
+"Total","92.4889","7.5111","100%"
+"Income percent of poverty level"
+"0 <= X <= 100","95.5846","4.4154","100%"
+"101 <= X <= 200","94.1820","5.8180","100%"
+"201 <= X <= 300","91.6736","8.3264","100%"
+"301 <= X <= 400","87.4396","12.5604","100%"
+"401 <= X <= 1000","89.2082","10.7918","100%"
+
+"STANDARD ERRORS (BRR)"
+"Total","0.12853","0.12853"
+"Income percent of poverty level"
+"0 <= X <= 100","0.25714","0.25714"
+"101 <= X <= 200","0.42695","0.42695"
+"201 <= X <= 300","0.54290","0.54290"
+"301 <= X <= 400","0.68747","0.68747"
+"401 <= X <= 1000","0.31166","0.31166"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","0.13897","1.71117"
+"Income percent of poverty level"
+"0 <= X <= 100","0.26902","5.82372"
+"101 <= X <= 200","0.45333","7.33843"
+"201 <= X <= 300","0.59221","6.52022"
+"301 <= X <= 400","0.78623","5.47333"
+"401 <= X <= 1000","0.34937","2.88797"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","9693150","787187","10480337"
+"Income percent of poverty level"
+"0 <= X <= 100","2258094","104310","2362404"
+"101 <= X <= 200","2032690","125569","2158259"
+"201 <= X <= 300","1439537","130748","1570285"
+"301 <= X <= 400","867829","124661","992490"
+"401 <= X <= 1000","2480289","300049","2780338"
+
+"CONFIDENCE INTERVALS"
+"","Direct PLUS Loans to parents"
+"","0 <= X <= 0","","2 <= X <= 71806","","Total"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","92.4889","92.24 - 92.74","7.5111","7.26 - 7.76","100%"
+"Income percent of poverty level"
+"0 <= X <= 100","95.5846","95.08 - 96.09","4.4154","3.91 - 4.92","100%"
+"101 <= X <= 200","94.1820","93.35 - 95.02","5.8180","4.98 - 6.65","100%"
+"201 <= X <= 300","91.6736","90.61 - 92.74","8.3264","7.26 - 9.39","100%"
+"301 <= X <= 400","87.4396","86.09 - 88.79","12.5604","11.21 - 13.91","100%"
+"401 <= X <= 1000","89.2082","88.60 - 89.82","10.7918","10.18 - 11.40","100%"
+"The names of the variables used in this table are: PLUSAMT and PCTPOV. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTA000"
+
+"NOTE: Detail may not sum to totals because of rounding."
+
+"Source: U.S. Department of Education, National Center for Education Statistics, National Postsecondary Student Aid Study-Administrative Collection: 2018, Undergraduates (NPSAS-AC)."
+
+"Computation by NCES PowerStats on 4/25/2022 at 14:29:05 UTC."
+
+"The table number to retrieve results is kktnnb"
