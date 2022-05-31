@@ -1,0 +1,1178 @@
+---
+title: "Appendix 2: Analysis of Parent-Borrowers in the Survey of Household Economics and Decisionmaking"
+author: "Peter Granville"
+date: "May 31, 2022"
+output: pdf_document
+classoption: landscape
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r opening, echo=FALSE, warning=FALSE}
+library(data.table)
+library(knitr)
+library(scales)
+library(dplyr)
+library(colorRamps)
+library(RColorBrewer)
+library(stringr)
+library(ggplot2)
+########### First we load the SHED data. The files can be downloaded from https://www.federalreserve.gov/consumerscommunities/shed_data.htm. 
+########### We use the 2017, 2018, 2019, and 2020 surveys, without using any of the supplements. 
+shed2017 <- fread("SHED-2017.csv", header=TRUE, select=c(
+  "CaseID", 
+  "weight3b", 
+  "SL11",     # Owes money for child or grandchild's education
+  "SL12_a",   # Money owed is a student loan
+  "SL12_b",   # Money owed is a home equity loan
+  "SL12_c",   # Money owed is a credit card balance
+  "SL12_d",   # Money owed is another type of loan 
+  "SL1",      # Owes money for own education
+  "ppcm0062", # Number of own jobs 
+  "ppwork",   # Current employment status 
+  "ppage",    # Age
+  "ppeducat", # Education attainment level: 4 categories
+  "ED0",      # Education attainment level: 9 categories
+  "ppethm",   # Race/ethnicity
+  "D1I",      # Retirement status
+  "I40",      # Total income
+  "L0_b",     # Lives with children under age 18
+  "L0_c",     # Lives with adult children over 18
+  "L0_d",     # Lives with own parents 
+  "B2",       # Comfort with financial situation
+  "B6",       # Comparison to parents' financial situation 
+  "GH1",      # Home ownership status
+  "C3",       # Unpaid credit card debt 
+  "C4A",      # Frequency of unpaid credit card debt
+  "K5A",      # Borrowed money or cashed out from retirement savings
+  "I20",      # Spending more/less compared to income
+  "FS30_b",   # Regular financial support from adult children
+  "EF1",      # Emergency or rainy day funds >= 3 months expenses 
+  "EF2",      # Ability to cover 3 months of expenses 
+  "EF5A",     # Ability to pay this month's bills in full
+  "EF5B",     # Impact of a sudden $400 expense
+  "EF6A_f",   # Inability to pay student loan bill this month
+  "FS20_a",   # Receive help with rent or mortgage
+  "FS20_b",   # Receive help with education expenses or student loans
+  "FS20_c",   # Receive help with car payment
+  "FS20_d",   # Receive help with other bills
+  "FS20_e",   # Receive money for general expenses or anything else 
+  "ppfs0596"  # Savings and investments
+))
+names(shed2017)[2] <- "weight"
+shed2018 <- fread("SHED-2018.csv", header=TRUE, select=c(
+  "CaseID", 
+  "weight2b",
+  "SL11",     # Owes money for child or grandchild's education
+  "SL12_a",   # Money owed is a student loan
+  "SL12_b",   # Money owed is a home equity loan
+  "SL12_c",   # Money owed is a credit card balance
+  "SL12_d",   # Money owed is another type of loan 
+  "SL1",      # Owes money for own education
+  "ppcm0062", # Number of own jobs 
+  "ppwork",   # Current employment status 
+  "ppage",    # Age
+  "ppeducat", # Education attainment level: 4 categories
+  "ED0",      # Education attainment level: 9 categories
+  "ppethm",   # Race/ethnicity
+  "D1I",      # Retirement status
+  "I40",      # Total income
+  "L0_b",     # Lives with children under age 18
+  "L0_c",     # Lives with adult children over 18
+  "L0_d",     # Lives with own parents 
+  "B2",       # Comfort with financial situation
+  "B6",       # Comparison to parents' financial situation 
+  "GH1",      # Home ownership status
+  "C3",       # Unpaid credit card debt 
+  "C4A",      # Frequency of unpaid credit card debt
+  "K5A",      # Borrowed money or cashed out from retirement savings
+  "I20",      # Spending more/less compared to income
+  "FS30_b",   # Regular financial support from adult children
+  "EF1",      # Emergency or rainy day funds >= 3 months expenses 
+  "EF2",      # Ability to cover 3 months of expenses 
+  "EF5A",     # Ability to pay this month's bills in full
+  "EF5B",     # Impact of a sudden $400 expense
+  "EF6A_f",   # Inability to pay student loan bill this month
+  "R1_e",     # Can't qualify for home mortgage
+  "R1_f",     # Can't afford down payment for home
+  "FS20_a",   # Receive help with rent or mortgage
+  "FS20_b",   # Receive help with education expenses or student loans
+  "FS20_c",   # Receive help with car payment
+  "FS20_d",   # Receive help with other bills
+  "FS20_e",   # Receive money for general expenses or anything else 
+  "ppfs0596"  # Savings and investments
+))
+names(shed2018)[2] <- "weight"
+shed2019 <- fread("SHED-2019.csv", header=TRUE, select=c(
+  "CaseID", 
+  "weight_pop",
+  "SL11",     # Owes money for child or grandchild's education
+  "SL12_a",   # Money owed is a student loan
+  "SL12_b",   # Money owed is a home equity loan
+  "SL12_c",   # Money owed is a credit card balance
+  "SL12_d",   # Money owed is another type of loan 
+  "SL1",      # Owes money for own education
+  "ppcm0062", # Number of own jobs 
+  "ppwork",   # Current employment status 
+  "ppage",    # Age
+  "ppeducat", # Education attainment level: 4 categories
+  "ED0",      # Education attainment level: 9 categories
+  "ppethm",   # Race/ethnicity
+  "D1I",      # Retirement status
+  "I40",      # Total income
+  "L0_b",     # Lives with children under age 18
+  "L0_c",     # Lives with adult children over 18
+  "L0_d",     # Lives with own parents 
+  "B2",       # Comfort with financial situation
+  "B6",       # Comparison to parents' financial situation 
+  "GH1",      # Home ownership status
+  "C3",       # Unpaid credit card debt 
+  "C4A",      # Frequency of unpaid credit card debt
+  "K5A",      # Borrowed money or cashed out from retirement savings
+  "I20",      # Spending more/less compared to income
+  "FS30_b",   # Regular financial support from adult children
+  "EF1",      # Emergency or rainy day funds >= 3 months expenses 
+  "EF2",      # Ability to cover 3 months of expenses 
+  "EF5A",     # Ability to pay this month's bills in full
+  "EF5B",     # Impact of a sudden $400 expense
+  "EF6A_f",   # Inability to pay student loan bill this month
+  "R1_e",     # Can't qualify for home mortgage
+  "R1_f",     # Can't afford down payment for home
+  "ppfs1482", # Estimated credit score range
+  "FS20_a",   # Receive help with rent or mortgage
+  "FS20_b",   # Receive help with education expenses or student loans
+  "FS20_c",   # Receive help with car payment
+  "FS20_d",   # Receive help with other bills
+  "FS20_e",   # Receive money for general expenses or anything else 
+  "ppfs0596"  # Savings and investments
+))
+names(shed2019)[2] <- "weight"
+shed2020 <- fread("SHED-2020.csv", header=TRUE, select=c(
+  "CaseID", 
+  "weight_pop", 
+  "SL11",     # Owes money for child or grandchild's education
+  "SL12_a",   # Money owed is a student loan
+  "SL12_b",   # Money owed is a home equity loan
+  "SL12_c",   # Money owed is a credit card balance
+  "SL12_d",   # Money owed is another type of loan 
+  "SL1",      # Owes money for own education
+  "ppcm0062", # Number of own jobs 
+  "ppwork",   # Current employment status 
+  "ppage",    # Age
+  "ppeducat", # Education attainment level: 4 categories
+  "ED0",      # Education attainment level: 9 categories
+  "ppethm",   # Race/ethnicity
+  "D1I",      # Retirement status
+  "I40",      # Total income
+  "L0_b",     # Lives with children under age 18
+  "L0_c",     # Lives with adult children over 18
+  "L0_d",     # Lives with own parents 
+  "B2",       # Comfort with financial situation
+  "B6",       # Comparison to parents' financial situation 
+  "GH1",      # Home ownership status
+  "C3",       # Unpaid credit card debt 
+  "C4A",      # Frequency of unpaid credit card debt
+  "K5A",      # Borrowed money or cashed out from retirement savings
+  "I20",      # Spending more/less compared to income
+  "FS30_b",   # Regular financial support from adult children
+  "EF1",      # Emergency or rainy day funds >= 3 months expenses 
+  "EF2",      # Ability to cover 3 months of expenses 
+  "EF5A",     # Ability to pay this month's bills in full
+  "EF5B",     # Impact of a sudden $400 expense
+  "EF6A_f",   # Inability to pay student loan bill this month
+  "ppfs1482", # Estimated credit score range
+  "ppfs0596"  # Savings and investments
+))
+names(shed2020)[2] <- "weight"
+########### Adding in null variables where missing, typically due to changes in survey questions 
+shed2020$R1_e <- rep(NA, nrow(shed2020))
+shed2017$R1_e <- rep(NA, nrow(shed2017))
+shed2020$R1_f <- rep(NA, nrow(shed2020))
+shed2017$R1_f <- rep(NA, nrow(shed2017))
+shed2018$ppfs1482 <- rep(NA, nrow(shed2018))
+shed2017$ppfs1482 <- rep(NA, nrow(shed2017))
+shed2020$FS20_a <- rep(NA, nrow(shed2020))
+shed2020$FS20_b <- rep(NA, nrow(shed2020))
+shed2020$FS20_c <- rep(NA, nrow(shed2020))
+shed2020$FS20_d <- rep(NA, nrow(shed2020))
+shed2020$FS20_e <- rep(NA, nrow(shed2020))
+########### Adding in year variable 
+shed2017$Year <- rep(2017, nrow(shed2017))
+shed2018$Year <- rep(2018, nrow(shed2018))
+shed2019$Year <- rep(2019, nrow(shed2019))
+shed2020$Year <- rep(2020, nrow(shed2020))
+########### Merging datasets 
+shed <- rbind(shed2017, shed2018, shed2019, shed2020)
+########### Filtering for parents and grandparents 
+shed <- shed %>% filter(SL11 %in% c("Yes", "No"))
+########### Establishing groups and the count variable 
+shed$Count <- rep(1, nrow(shed))
+shed$Group <- rep(NA, nrow(shed))
+########### Filtering for those who have student loans for a child's education
+shed$Group[(shed$ppethm=="Black, Non-Hispanic") & (shed$SL12_a=="Yes")] <- "Black with SLs for child's education" 
+shed$Group[(shed$ppethm=="White, Non-Hispanic") & (shed$SL12_a=="Yes")] <- "White with SLs for child's education" 
+shed$Group[(shed$ppethm=="Hispanic") & (shed$SL12_a=="Yes")] <- "Hispanic with SLs for child's education" 
+shed$Group[(shed$ppethm=="Other, Non-Hispanic") & (shed$SL12_a=="Yes")] <- "Others with SLs for child's education" 
+shed$Group[(shed$ppethm=="2+ Races, Non-Hispanic") & (shed$SL12_a=="Yes")] <- "Others with SLs for child's education" 
+shed$Group[(shed$ppethm=="Black, Non-Hispanic") & (shed$SL12_a != "Yes")] <- "Black without SLs for child's education" 
+shed$Group[(shed$ppethm=="White, Non-Hispanic") & (shed$SL12_a != "Yes")] <- "White without SLs for child's education" 
+shed$Group[(shed$ppethm=="Hispanic") & (shed$SL12_a != "Yes")] <- "Hispanic without SLs for child's education" 
+shed$Group[(shed$ppethm=="Other, Non-Hispanic") & (shed$SL12_a != "Yes")] <- "Others without SLs for child's education" 
+shed$Group[(shed$ppethm=="2+ Races, Non-Hispanic") & (shed$SL12_a != "Yes")] <- "Others without SLs for child's education"
+levelOrder <- c("Black with SLs for child's education", "White with SLs for child's education", "Hispanic with SLs for child's education", "Others with SLs for child's education", "Black without SLs for child's education", "White without SLs for child's education", "Hispanic without SLs for child's education", "Others without SLs for child's education")
+######## 
+```
+
+```{r tbl0, echo=FALSE, results='asis'}
+########### Gathering basic totals by group
+shed888 <- shed
+shed888$ppethm[shed888$ppethm=="2+ Races, Non-Hispanic"] <- "Other, Non-Hispanic"
+shed888$ppethm <- as.factor(shed888$ppethm)
+tbl0 <- aggregate(data=shed888, weight ~ ppethm + SL11, FUN=sum)
+########### Deriving each subject's share of their group's total weight 
+tbl0$weight[tbl0$ppethm=="Black, Non-Hispanic"] <- tbl0$weight[tbl0$ppethm=="Black, Non-Hispanic"] / sum(tbl0$weight[tbl0$ppethm=="Black, Non-Hispanic"])
+tbl0$weight[tbl0$ppethm=="White, Non-Hispanic"] <- tbl0$weight[tbl0$ppethm=="White, Non-Hispanic"] / sum(tbl0$weight[tbl0$ppethm=="White, Non-Hispanic"])
+tbl0$weight[tbl0$ppethm=="Hispanic"] <- tbl0$weight[tbl0$ppethm=="Hispanic"] / sum(tbl0$weight[tbl0$ppethm=="Hispanic"])
+tbl0$weight[tbl0$ppethm=="Other, Non-Hispanic"] <- tbl0$weight[tbl0$ppethm=="Other, Non-Hispanic"] / sum(tbl0$weight[tbl0$ppethm=="Other, Non-Hispanic"])
+########### Making a table based on share who hold parent loans 
+tbl0 <- reshape2::dcast(data=tbl0, ppethm ~ SL11, value.var="weight")
+tbl0$Yes <- percent(tbl0$Yes, accuracy=0.1)
+tbl0 <- tbl0 %>% select(ppethm, Yes)
+kable0 <- kable(tbl0, caption="Share of parents who hold student loans for a child's education", row.names=FALSE, col.names=c("Group", "Share who hold these loans"), align="lc")
+```
+
+```{r tblA, echo=FALSE, results='asis'}
+###########  How many survey respondents by group 
+tbl1 <- aggregate(data=shed, Count ~ Group, FUN=sum)
+tbl1$Count <- format(tbl1$Count, big.mark=",")
+###########  How many U.S. adults are represented (diviing by 4 because of 4 pooled survey years)
+tbl2 <- aggregate(data=shed, weight ~ Group, FUN=sum)
+tbl2$weight <- format(round(as.numeric((tbl2$weight / 4)), digits=-3), big.mark=",")
+###########  Estimated share of all U.S. adults by group
+tbl3 <- aggregate(data=shed, weight ~ Group, FUN=sum)
+tbl3$weight <- percent((tbl3$weight / sum(tbl3$weight)), accuracy=0.1)
+tblA <- full_join(x=tbl1, y=full_join(x=tbl2, y=tbl3, by="Group"), by="Group")
+kable3 <- kable(tblA, caption="SHED survey basics", row.names=FALSE, col.names=c("Group", "Survey respondents", "Estimated U.S. parents", "Estimated share of U.S. parents"), align = "lccc")
+```
+
+```{r tblB, echo=FALSE, results='asis'}
+shedSL12b <- shed %>% filter(SL12_b %in% c("No", "Yes")) 
+tbl4b <- aggregate(data=shedSL12b, weight ~ Group + SL12_b, FUN=sum)
+stat18a <- aggregate(data=shedSL12b, weight ~ SL12_b, FUN=sum) # USED FOR STAT 18A IN PLUS REPORT
+tbl4b$weight[tbl4b$Group=="Black with SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="Black with SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="Black with SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="White with SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="White with SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="White with SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="Hispanic with SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="Hispanic with SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="Hispanic with SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="Others with SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="Others with SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="Others with SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="Black without SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="Black without SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="Black without SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="White without SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="White without SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="White without SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="Hispanic without SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="Hispanic without SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="Hispanic without SLs for child's education"])
+tbl4b$weight[tbl4b$Group=="Others without SLs for child's education"] <- tbl4b$weight[tbl4b$Group=="Others without SLs for child's education"] / sum(tbl4b$weight[tbl4b$Group=="Others without SLs for child's education"])
+tbl4b <- reshape2::dcast(data=tbl4b, Group ~ SL12_b, value.var="weight")
+tbl4b <- tbl4b[, c(1, 3)]
+tbl4b$Yes <- percent(tbl4b$Yes, accuracy=0.1)
+shedSL12c <- shed %>% filter(SL12_c %in% c("No", "Yes")) 
+tbl4c <- aggregate(data=shedSL12c, weight ~ Group + SL12_c, FUN=sum) 
+stat18b <- aggregate(data=shedSL12c, weight ~ SL12_c, FUN=sum) # USED FOR STAT 18B IN PLUS REPORT
+tbl4c$weight[tbl4c$Group=="Black with SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="Black with SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="Black with SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="White with SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="White with SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="White with SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="Hispanic with SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="Hispanic with SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="Hispanic with SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="Others with SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="Others with SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="Others with SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="Black without SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="Black without SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="Black without SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="White without SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="White without SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="White without SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="Hispanic without SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="Hispanic without SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="Hispanic without SLs for child's education"])
+tbl4c$weight[tbl4c$Group=="Others without SLs for child's education"] <- tbl4c$weight[tbl4c$Group=="Others without SLs for child's education"] / sum(tbl4c$weight[tbl4c$Group=="Others without SLs for child's education"])
+tbl4c <- reshape2::dcast(data=tbl4c, Group ~ SL12_c, value.var="weight")
+tbl4c <- tbl4c[, c(1, 3)]
+tbl4c$Yes <- percent(tbl4c$Yes, accuracy=0.1)
+shedSL12d <- shed %>% filter(SL12_d %in% c("No", "Yes")) 
+tbl4d <- aggregate(data=shedSL12d, weight ~ Group + SL12_d, FUN=sum)
+tbl4d$weight[tbl4d$Group=="Black with SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="Black with SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="Black with SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="White with SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="White with SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="White with SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="Hispanic with SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="Hispanic with SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="Hispanic with SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="Others with SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="Others with SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="Others with SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="Black without SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="Black without SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="Black without SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="White without SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="White without SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="White without SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="Hispanic without SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="Hispanic without SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="Hispanic without SLs for child's education"])
+tbl4d$weight[tbl4d$Group=="Others without SLs for child's education"] <- tbl4d$weight[tbl4d$Group=="Others without SLs for child's education"] / sum(tbl4d$weight[tbl4d$Group=="Others without SLs for child's education"])
+tbl4d <- reshape2::dcast(data=tbl4d, Group ~ SL12_d, value.var="weight")
+tbl4d <- tbl4d[, c(1, 3)]
+tbl4d$Yes <- percent(tbl4d$Yes, accuracy=0.1)
+tbl4 <- full_join(x=tbl4b, y=full_join(x=tbl4c, y=tbl4d, by="Group"), by="Group")
+kable4 <- kable(tbl4, caption="Responses to 'Is the money you owe for your child or grandchild's education a home equity loan, credit card debt, or some other type of loan? If you have multiple loans, please select all that apply.'", row.names=FALSE, col.names=c("Group", "Home equity loan", "Credit card debt", "Another type of debt"), align = "lccc")
+```
+
+```{r tbl5, echo=FALSE, results='asis'}
+# How often those who hold debt for child's education also hold debt for their own education 
+shedSL1 <- shed %>% filter(SL1 %in% c("No", "Yes"))
+tbl5 <- aggregate(data=shedSL1, weight ~ Group + SL1, FUN=sum)
+tbl5$weight[tbl5$Group=="Black with SLs for child's education"] <- tbl5$weight[tbl5$Group=="Black with SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="Black with SLs for child's education"])
+tbl5$weight[tbl5$Group=="White with SLs for child's education"] <- tbl5$weight[tbl5$Group=="White with SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="White with SLs for child's education"])
+tbl5$weight[tbl5$Group=="Hispanic with SLs for child's education"] <- tbl5$weight[tbl5$Group=="Hispanic with SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="Hispanic with SLs for child's education"])
+tbl5$weight[tbl5$Group=="Others with SLs for child's education"] <- tbl5$weight[tbl5$Group=="Others with SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="Others with SLs for child's education"])
+tbl5$weight[tbl5$Group=="Black without SLs for child's education"] <- tbl5$weight[tbl5$Group=="Black without SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="Black without SLs for child's education"])
+tbl5$weight[tbl5$Group=="White without SLs for child's education"] <- tbl5$weight[tbl5$Group=="White without SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="White without SLs for child's education"])
+tbl5$weight[tbl5$Group=="Hispanic without SLs for child's education"] <- tbl5$weight[tbl5$Group=="Hispanic without SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="Hispanic without SLs for child's education"])
+tbl5$weight[tbl5$Group=="Others without SLs for child's education"] <- tbl5$weight[tbl5$Group=="Others without SLs for child's education"] / sum(tbl5$weight[tbl5$Group=="Others without SLs for child's education"])
+tbl5 <- reshape2::dcast(data=tbl5, Group ~ SL1, value.var="weight")
+tbl5$Yes <- percent(tbl5$Yes, accuracy=0.1)
+tbl5$No <- percent(tbl5$No, accuracy=0.1)
+kable5 <- kable(tbl5, caption="Responses to 'Do you currently have student loan debt or owe any money used to pay for your own education?'", row.names=FALSE, align = "lcc")
+```
+
+```{r tbl6, echo=FALSE, results='asis'}
+# Number of jobs held: 
+shedPPCM <- shed %>% filter((ppcm0062 %in% c("One", "Two", "Three", "Four or more")) | (ppwork %in% c("Not working - retired", "Not working - disabled", "Not working retired", "Not working disabled"))==FALSE) %>% filter(ppcm0062 != "Refused")
+shedPPCM$ppcm0062[shedPPCM$ppcm0062=="Not asked"] <- "None"
+shedPPCM$ppcm0062[shedPPCM$ppcm0062==""] <- "None"
+tbl6 <- aggregate(data=shedPPCM, weight ~ Group + ppcm0062, FUN=sum)
+tbl6$weight[tbl6$Group=="Black with SLs for child's education"] <- tbl6$weight[tbl6$Group=="Black with SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="Black with SLs for child's education"])
+tbl6$weight[tbl6$Group=="White with SLs for child's education"] <- tbl6$weight[tbl6$Group=="White with SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="White with SLs for child's education"])
+tbl6$weight[tbl6$Group=="Hispanic with SLs for child's education"] <- tbl6$weight[tbl6$Group=="Hispanic with SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="Hispanic with SLs for child's education"])
+tbl6$weight[tbl6$Group=="Others with SLs for child's education"] <- tbl6$weight[tbl6$Group=="Others with SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="Others with SLs for child's education"])
+tbl6$weight[tbl6$Group=="Black without SLs for child's education"] <- tbl6$weight[tbl6$Group=="Black without SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="Black without SLs for child's education"])
+tbl6$weight[tbl6$Group=="White without SLs for child's education"] <- tbl6$weight[tbl6$Group=="White without SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="White without SLs for child's education"])
+tbl6$weight[tbl6$Group=="Hispanic without SLs for child's education"] <- tbl6$weight[tbl6$Group=="Hispanic without SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="Hispanic without SLs for child's education"])
+tbl6$weight[tbl6$Group=="Others without SLs for child's education"] <- tbl6$weight[tbl6$Group=="Others without SLs for child's education"] / sum(tbl6$weight[tbl6$Group=="Others without SLs for child's education"])
+tbl6a <- reshape2::dcast(data=tbl6, Group ~ ppcm0062, value.var="weight")
+tbl6a <- tbl6a[, c(1, 3, 4, 6, 5, 2)]
+tbl6a$None <- percent(tbl6a$None, accuracy=0.1)
+tbl6a$One <- percent(tbl6a$One, accuracy=0.1)
+tbl6a$Two <- percent(tbl6a$Two, accuracy=0.1)
+tbl6a$Three <- percent(tbl6a$Three, accuracy=0.1)
+tbl6a$`Four or more` <- percent(tbl6a$`Four or more`, accuracy=0.1)
+kable6 <- kable(tbl6a, caption="Responses to 'Altogether, how many jobs do you have?' (Retired and disabled individuals excluded)", row.names=FALSE, align = "lccccc")
+```
+
+```{r tbl6b, echo=FALSE, results='asis'}
+# Retirement status
+shedD1I <- shed %>% filter(D1I %in% c("No", "Yes"))
+tbl6b <- aggregate(data=shedD1I, weight ~ Group + D1I, FUN=sum)
+tbl6b$weight[tbl6b$Group=="Black with SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="Black with SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="Black with SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="White with SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="White with SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="White with SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="Hispanic with SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="Hispanic with SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="Hispanic with SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="Others with SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="Others with SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="Others with SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="Black without SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="Black without SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="Black without SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="White without SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="White without SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="White without SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="Hispanic without SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="Hispanic without SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="Hispanic without SLs for child's education"])
+tbl6b$weight[tbl6b$Group=="Others without SLs for child's education"] <- tbl6b$weight[tbl6b$Group=="Others without SLs for child's education"] / sum(tbl6b$weight[tbl6b$Group=="Others without SLs for child's education"])
+tbl6b <- reshape2::dcast(data=tbl6b, Group ~ D1I, value.var="weight")
+tbl6b$Yes <- percent(tbl6b$Yes, accuracy=0.1)
+tbl6b$No <- percent(tbl6b$No, accuracy=0.1)
+kable6b <- kable(tbl6b, caption="Responses to 'Do you consider yourself to be retired?'", row.names=FALSE, align = "lcc")
+```
+
+```{r age, echo=FALSE, fig.align = 'center'}
+# Age (weighted)
+shedPPAGE <- shed %>% filter(ppage %in% 30:999)
+shedPPAGE$ppage2 <- rep(NA, nrow(shedPPAGE))
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(0, 1, 2, 3, 4)] <- "0 to 4"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(5, 6, 7, 8, 9)] <- "5 to 9"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(10, 11, 12, 13, 14)] <- "10 to 14"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(15, 16, 17, 18, 19)] <- "15 to 19"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(20, 21, 22, 23, 24)] <- "20 to 24"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(25, 26, 27, 28, 29)] <- "25 to 29"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(30, 31, 32, 33, 34)] <- "30 to 34"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(35, 36, 37, 38, 39)] <- "35 to 39"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(40, 41, 42, 43, 44)] <- "40 to 44"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(45, 46, 47, 48, 49)] <- "45 to 49"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(50, 51, 52, 53, 54)] <- "50 to 54"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(55, 56, 57, 58, 59)] <- "55 to 59"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(60, 61, 62, 63, 64)] <- "60 to 64"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(65, 66, 67, 68, 69)] <- "65 to 69"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(70, 71, 72, 73, 74)] <- "70 to 74"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(75, 76, 77, 78, 79)] <- "75 to 79"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(80, 81, 82, 83, 84)] <- "80+"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(85, 86, 87, 88, 89)] <- "80+"
+shedPPAGE$ppage2[shedPPAGE$ppage %in% c(90, 91, 92, 93, 94)] <- "80+"
+shedPPAGE$ppage2 <- as.factor(shedPPAGE$ppage2)
+shedPPAGE$ppage2 <- factor(shedPPAGE$ppage2, levels = c(
+  "80+", 
+  "75 to 79", 
+  "70 to 74", 
+  "65 to 69",
+  "60 to 64",
+  "55 to 59",
+  "50 to 54", 
+  "45 to 49", 
+  "40 to 44", 
+  "35 to 39", 
+  "30 to 34",
+  "25 to 29", 
+  "20 to 24",
+  "15 to 19", 
+  "10 to 14", 
+  "5 to 9", 
+  "0 to 4"
+))
+shedPPAGE2 <- aggregate(data=shedPPAGE, weight ~ ppage2 + Group, FUN=sum)
+shedPPAGE2$weight[shedPPAGE2$Group=="Black with SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="Black with SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="Black with SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="White with SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="White with SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="White with SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="Hispanic with SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="Hispanic with SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="Hispanic with SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="Others with SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="Others with SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="Others with SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="Black without SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="Black without SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="Black without SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="White without SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="White without SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="White without SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="Hispanic without SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="Hispanic without SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="Hispanic without SLs for child's education"])
+shedPPAGE2$weight[shedPPAGE2$Group=="Others without SLs for child's education"] <- shedPPAGE2$weight[shedPPAGE2$Group=="Others without SLs for child's education"] / sum(shedPPAGE2$weight[shedPPAGE2$Group=="Others without SLs for child's education"])
+shedPPAGE2$Group[shedPPAGE2$Group=="Black with SLs for child's education"] <- "Black with SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="White with SLs for child's education"] <- "White with SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="Hispanic with SLs for child's education"] <- "Hispanic with SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="Others with SLs for child's education"] <- "Others with SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="Black without SLs for child's education"] <- "Black without SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="White without SLs for child's education"] <- "White without SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="Hispanic without SLs for child's education"] <- "Hispanic without SLs"
+shedPPAGE2$Group[shedPPAGE2$Group=="Others without SLs for child's education"] <- "Others without SLs"
+gg1 <- ggplot(data=shedPPAGE2, mapping=aes(x=Group, y=weight, fill=ppage2)) + geom_bar(stat = "identity", position = "stack") + scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + scale_fill_brewer(palette="RdYlGn") + labs(y="Share of total", x="", fill="Age group", title="Age distribution of U.S. adults (aged 30+)") + theme(text=element_text(family="serif"))
+```
+
+```{r table8, echo=FALSE}
+# Education level
+tbl8 <- aggregate(data=shed, weight ~ Group + ppeducat, FUN=sum)
+tbl8$weight[tbl8$Group=="Black with SLs for child's education"] <- tbl8$weight[tbl8$Group=="Black with SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="Black with SLs for child's education"])
+tbl8$weight[tbl8$Group=="White with SLs for child's education"] <- tbl8$weight[tbl8$Group=="White with SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="White with SLs for child's education"])
+tbl8$weight[tbl8$Group=="Hispanic with SLs for child's education"] <- tbl8$weight[tbl8$Group=="Hispanic with SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="Hispanic with SLs for child's education"])
+tbl8$weight[tbl8$Group=="Others with SLs for child's education"] <- tbl8$weight[tbl8$Group=="Others with SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="Others with SLs for child's education"])
+tbl8$weight[tbl8$Group=="Black without SLs for child's education"] <- tbl8$weight[tbl8$Group=="Black without SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="Black without SLs for child's education"])
+tbl8$weight[tbl8$Group=="White without SLs for child's education"] <- tbl8$weight[tbl8$Group=="White without SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="White without SLs for child's education"])
+tbl8$weight[tbl8$Group=="Hispanic without SLs for child's education"] <- tbl8$weight[tbl8$Group=="Hispanic without SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="Hispanic without SLs for child's education"])
+tbl8$weight[tbl8$Group=="Others without SLs for child's education"] <- tbl8$weight[tbl8$Group=="Others without SLs for child's education"] / sum(tbl8$weight[tbl8$Group=="Others without SLs for child's education"])
+tbl8 <- reshape2::dcast(data=tbl8, Group ~ ppeducat, value.var="weight")
+tbl8 <- tbl8[, c(1, 4, 3, 5, 2)]
+tbl8$`Less than high school` <- percent(tbl8$`Less than high school`, accuracy=0.1)
+tbl8$`High school` <- percent(tbl8$`High school`, accuracy=0.1)
+tbl8$`Some college` <- percent(tbl8$`Some college`, accuracy=0.1)
+tbl8$`Bachelor's degree or higher` <- percent(tbl8$`Bachelor's degree or higher`, accuracy=0.1)
+kable8 <- kable(tbl8, caption="Education level:", row.names=FALSE, align = "lcccc")
+```
+
+```{r income, echo=FALSE, fig.align = 'center'}
+# Income level 
+shedI40 <- shed %>% filter(I40 != "Refused") %>% filter(I40 != "")
+shedI40$I40[shedI40$I40=="$1 to $4,999"] <- "$0 to $4,999"
+shedI40$I40[shedI40$I40=="$0"] <- "$0 to $4,999"
+shedI40$I40[shedI40$I40=="0"] <- "$0 to $4,999"
+shedI40$I40 <- factor(shedI40$I40, levels = c(
+  "$200,000 or higher", 
+  "$150,000 to $199,999",
+  "$100,000 to $149,999",
+  "$75,000 to $99,999",
+  "$50,000 to $74,999",
+  "$40,000 to $49,999",
+  "$25,000 to $39,999",
+  "$15,000 to $24,999",
+  "$5,000 to $14,999",
+  "$0 to $4,999"
+))
+tbl9 <- aggregate(data=shedI40, weight ~ Group + I40, FUN=sum)
+tbl9$weight[tbl9$Group=="Black with SLs for child's education"] <- tbl9$weight[tbl9$Group=="Black with SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="Black with SLs for child's education"])
+tbl9$weight[tbl9$Group=="White with SLs for child's education"] <- tbl9$weight[tbl9$Group=="White with SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="White with SLs for child's education"])
+tbl9$weight[tbl9$Group=="Hispanic with SLs for child's education"] <- tbl9$weight[tbl9$Group=="Hispanic with SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="Hispanic with SLs for child's education"])
+tbl9$weight[tbl9$Group=="Others with SLs for child's education"] <- tbl9$weight[tbl9$Group=="Others with SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="Others with SLs for child's education"])
+tbl9$weight[tbl9$Group=="Black without SLs for child's education"] <- tbl9$weight[tbl9$Group=="Black without SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="Black without SLs for child's education"])
+tbl9$weight[tbl9$Group=="White without SLs for child's education"] <- tbl9$weight[tbl9$Group=="White without SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="White without SLs for child's education"])
+tbl9$weight[tbl9$Group=="Hispanic without SLs for child's education"] <- tbl9$weight[tbl9$Group=="Hispanic without SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="Hispanic without SLs for child's education"])
+tbl9$weight[tbl9$Group=="Others without SLs for child's education"] <- tbl9$weight[tbl9$Group=="Others without SLs for child's education"] / sum(tbl9$weight[tbl9$Group=="Others without SLs for child's education"])
+tbl9$Group[tbl9$Group=="Black with SLs for child's education"] <- "Black with SLs"
+tbl9$Group[tbl9$Group=="White with SLs for child's education"] <- "White with SLs"
+tbl9$Group[tbl9$Group=="Hispanic with SLs for child's education"] <- "Hispanic with SLs"
+tbl9$Group[tbl9$Group=="Others with SLs for child's education"] <- "Others with SLs"
+tbl9$Group[tbl9$Group=="Black without SLs for child's education"] <- "Black without SLs"
+tbl9$Group[tbl9$Group=="White without SLs for child's education"] <- "White without SLs"
+tbl9$Group[tbl9$Group=="Hispanic without SLs for child's education"] <- "Hispanic without SLs"
+tbl9$Group[tbl9$Group=="Others without SLs for child's education"] <- "Others without SLs"
+gg2 <- ggplot(data=tbl9, mapping=aes(x=Group, y=weight, fill=I40)) + geom_bar(stat = "identity", position = "stack") + scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + scale_fill_brewer(palette="RdYlGn", direction=-1) + labs(y="Share of total", x="", fill="Income group", title="Income distribution of U.S. adults") + theme(text=element_text(family="serif"))
+```
+
+```{r household, echo=FALSE}
+# How often children under 18 live with respondent
+shedL0b <- shed %>% filter(L0_b %in% c("No", "Yes")) 
+tbl10b <- aggregate(data=shedL0b, weight ~ Group + L0_b, FUN=sum)
+tbl10b$weight[tbl10b$Group=="Black with SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="Black with SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="Black with SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="White with SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="White with SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="White with SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="Hispanic with SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="Hispanic with SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="Hispanic with SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="Others with SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="Others with SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="Others with SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="Black without SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="Black without SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="Black without SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="White without SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="White without SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="White without SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="Hispanic without SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="Hispanic without SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="Hispanic without SLs for child's education"])
+tbl10b$weight[tbl10b$Group=="Others without SLs for child's education"] <- tbl10b$weight[tbl10b$Group=="Others without SLs for child's education"] / sum(tbl10b$weight[tbl10b$Group=="Others without SLs for child's education"])
+tbl10b <- reshape2::dcast(data=tbl10b, Group ~ L0_b, value.var="weight")
+tbl10b <- tbl10b[, c(1, 3)]
+tbl10b$Yes <- percent(tbl10b$Yes, accuracy=0.1)
+# How often children over 18 live with respondent
+shedL0c <- shed %>% filter(L0_c %in% c("No", "Yes")) 
+tbl10c <- aggregate(data=shedL0c, weight ~ Group + L0_c, FUN=sum)
+tbl10c$weight[tbl10c$Group=="Black with SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="Black with SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="Black with SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="White with SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="White with SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="White with SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="Hispanic with SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="Hispanic with SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="Hispanic with SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="Others with SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="Others with SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="Others with SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="Black without SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="Black without SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="Black without SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="White without SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="White without SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="White without SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="Hispanic without SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="Hispanic without SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="Hispanic without SLs for child's education"])
+tbl10c$weight[tbl10c$Group=="Others without SLs for child's education"] <- tbl10c$weight[tbl10c$Group=="Others without SLs for child's education"] / sum(tbl10c$weight[tbl10c$Group=="Others without SLs for child's education"])
+tbl10c <- reshape2::dcast(data=tbl10c, Group ~ L0_c, value.var="weight")
+tbl10c <- tbl10c[, c(1, 3)]
+tbl10c$Yes <- percent(tbl10c$Yes, accuracy=0.1)
+# How often respondent's parents live with respondent
+shedL0d <- shed %>% filter(L0_d %in% c("No", "Yes")) 
+tbl10d <- aggregate(data=shedL0d, weight ~ Group + L0_d, FUN=sum)
+tbl10d$weight[tbl10d$Group=="Black with SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="Black with SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="Black with SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="White with SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="White with SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="White with SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="Hispanic with SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="Hispanic with SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="Hispanic with SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="Others with SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="Others with SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="Others with SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="Black without SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="Black without SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="Black without SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="White without SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="White without SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="White without SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="Hispanic without SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="Hispanic without SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="Hispanic without SLs for child's education"])
+tbl10d$weight[tbl10d$Group=="Others without SLs for child's education"] <- tbl10d$weight[tbl10d$Group=="Others without SLs for child's education"] / sum(tbl10d$weight[tbl10d$Group=="Others without SLs for child's education"])
+tbl10d <- reshape2::dcast(data=tbl10d, Group ~ L0_d, value.var="weight")
+tbl10d <- tbl10d[, c(1, 3)]
+tbl10d$Yes <- percent(tbl10d$Yes, accuracy=0.1)
+tbl10 <- full_join(x=tbl10b, y=
+                     full_join(x=tbl10c, y=tbl10d, by="Group"), by="Group")
+kable10 <- kable(tbl10, caption="Presence of others in respondent's household:", row.names=FALSE, col.names=c("Group", "Children under 18", "Children over 18", "Respondent's parents"), align = "lccc")
+```
+
+```{r tbl11, echo=FALSE}
+shedB2 <- shed %>% filter(B2 != "Refused")
+tbl11 <- aggregate(data=shedB2, weight ~ Group + B2, FUN=sum)
+tbl11$weight[tbl11$Group=="Black with SLs for child's education"] <- tbl11$weight[tbl11$Group=="Black with SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="Black with SLs for child's education"])
+tbl11$weight[tbl11$Group=="White with SLs for child's education"] <- tbl11$weight[tbl11$Group=="White with SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="White with SLs for child's education"])
+tbl11$weight[tbl11$Group=="Hispanic with SLs for child's education"] <- tbl11$weight[tbl11$Group=="Hispanic with SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="Hispanic with SLs for child's education"])
+tbl11$weight[tbl11$Group=="Others with SLs for child's education"] <- tbl11$weight[tbl11$Group=="Others with SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="Others with SLs for child's education"])
+tbl11$weight[tbl11$Group=="Black without SLs for child's education"] <- tbl11$weight[tbl11$Group=="Black without SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="Black without SLs for child's education"])
+tbl11$weight[tbl11$Group=="White without SLs for child's education"] <- tbl11$weight[tbl11$Group=="White without SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="White without SLs for child's education"])
+tbl11$weight[tbl11$Group=="Hispanic without SLs for child's education"] <- tbl11$weight[tbl11$Group=="Hispanic without SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="Hispanic without SLs for child's education"])
+tbl11$weight[tbl11$Group=="Others without SLs for child's education"] <- tbl11$weight[tbl11$Group=="Others without SLs for child's education"] / sum(tbl11$weight[tbl11$Group=="Others without SLs for child's education"])
+tbl11$B2 <- factor(tbl11$B2, levels = c(
+  "Living comfortably", 
+  "Doing okay", 
+  "Just getting by", 
+  "Finding it difficult to get by"
+))
+tbl11$Group[tbl11$Group=="Black with SLs for child's education"] <- "Black with SLs"
+tbl11$Group[tbl11$Group=="White with SLs for child's education"] <- "White with SLs"
+tbl11$Group[tbl11$Group=="Hispanic with SLs for child's education"] <- "Hispanic with SLs"
+tbl11$Group[tbl11$Group=="Others with SLs for child's education"] <- "Others with SLs"
+tbl11$Group[tbl11$Group=="Black without SLs for child's education"] <- "Black without SLs"
+tbl11$Group[tbl11$Group=="White without SLs for child's education"] <- "White without SLs"
+tbl11$Group[tbl11$Group=="Hispanic without SLs for child's education"] <- "Hispanic without SLs"
+tbl11$Group[tbl11$Group=="Others without SLs for child's education"] <- "Others without SLs"
+gg6 <- ggplot(data=tbl11, mapping=aes(x=Group, y=weight, fill=B2)) + geom_bar(stat = "identity", position = "stack") + scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + scale_fill_brewer(palette="RdYlGn", direction=-1) + labs(y="Share of total", x="", fill="Comfort level", title="Parents' financial comfort levels") + theme(text=element_text(family="serif"))
+```
+
+```{r tbl12, echo=FALSE}
+# Comparison to parents' situation at same age
+shedB6 <- shed %>% filter(B6 != "Refused")
+tbl12 <- aggregate(data=shedB6, weight ~ Group + B6, FUN=sum)
+tbl12$weight[tbl12$Group=="Black with SLs for child's education"] <- tbl12$weight[tbl12$Group=="Black with SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="Black with SLs for child's education"])
+tbl12$weight[tbl12$Group=="White with SLs for child's education"] <- tbl12$weight[tbl12$Group=="White with SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="White with SLs for child's education"])
+tbl12$weight[tbl12$Group=="Hispanic with SLs for child's education"] <- tbl12$weight[tbl12$Group=="Hispanic with SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="Hispanic with SLs for child's education"])
+tbl12$weight[tbl12$Group=="Others with SLs for child's education"] <- tbl12$weight[tbl12$Group=="Others with SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="Others with SLs for child's education"])
+tbl12$weight[tbl12$Group=="Black without SLs for child's education"] <- tbl12$weight[tbl12$Group=="Black without SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="Black without SLs for child's education"])
+tbl12$weight[tbl12$Group=="White without SLs for child's education"] <- tbl12$weight[tbl12$Group=="White without SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="White without SLs for child's education"])
+tbl12$weight[tbl12$Group=="Hispanic without SLs for child's education"] <- tbl12$weight[tbl12$Group=="Hispanic without SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="Hispanic without SLs for child's education"])
+tbl12$weight[tbl12$Group=="Others without SLs for child's education"] <- tbl12$weight[tbl12$Group=="Others without SLs for child's education"] / sum(tbl12$weight[tbl12$Group=="Others without SLs for child's education"])
+tbl12$B6 <- factor(tbl12$B6, levels = c(
+  "Much better off", 
+  "Somewhat better off", 
+  "About the same", 
+  "Somewhat worse off", 
+  "Much worse off"
+))
+tbl12$Group[tbl12$Group=="Black with SLs for child's education"] <- "Black with SLs"
+tbl12$Group[tbl12$Group=="White with SLs for child's education"] <- "White with SLs"
+tbl12$Group[tbl12$Group=="Hispanic with SLs for child's education"] <- "Hispanic with SLs"
+tbl12$Group[tbl12$Group=="Others with SLs for child's education"] <- "Others with SLs"
+tbl12$Group[tbl12$Group=="Black without SLs for child's education"] <- "Black without SLs"
+tbl12$Group[tbl12$Group=="White without SLs for child's education"] <- "White without SLs"
+tbl12$Group[tbl12$Group=="Hispanic without SLs for child's education"] <- "Hispanic without SLs"
+tbl12$Group[tbl12$Group=="Others without SLs for child's education"] <- "Others without SLs"
+gg5 <- ggplot(data=tbl12, mapping=aes(x=Group, y=weight, fill=B6)) + geom_bar(stat = "identity", position = "stack") + scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + scale_fill_brewer(palette="RdYlGn", direction=-1) + labs(y="Share of total", x="", fill="Comparison to parents", title="Parents' financial well-being vs. their own parents' at same age") + theme(text=element_text(family="serif"))
+```
+
+```{r tbl13, echo=FALSE}
+# Home ownership
+shedGH1 <- shed %>% filter(GH1 != "Refused")
+shedGH1$GH1[shedGH1$GH1 == "neither own home nor pay rent."] <- "Neither own home nor pay rent"
+shedGH1$GH1[shedGH1$GH1 == "Neither own nor pay rent"] <- "Neither own home nor pay rent"
+shedGH1$GH1[shedGH1$GH1 == "own home free and clear (without a mortgage or loan)."] <- "Own home free and clear (without a mortgage or loan)"
+shedGH1$GH1[shedGH1$GH1 == "Own your home free and clear (without a mortgage or loan)"] <- "Own home free and clear (without a mortgage or loan)"
+shedGH1$GH1[shedGH1$GH1 == "own home with a mortgage or loan."] <- "Own home with a mortgage or loan"
+shedGH1$GH1[shedGH1$GH1 == "Own your home with a mortgage or loan"] <- "Own home with a mortgage or loan"
+shedGH1$GH1[shedGH1$GH1 == "pay rent."] <- "Pay rent"
+tbl13 <- aggregate(data=shedGH1, weight ~ Group + GH1, FUN=sum)
+tbl13$weight[tbl13$Group=="Black with SLs for child's education"] <- tbl13$weight[tbl13$Group=="Black with SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="Black with SLs for child's education"])
+tbl13$weight[tbl13$Group=="White with SLs for child's education"] <- tbl13$weight[tbl13$Group=="White with SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="White with SLs for child's education"])
+tbl13$weight[tbl13$Group=="Hispanic with SLs for child's education"] <- tbl13$weight[tbl13$Group=="Hispanic with SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="Hispanic with SLs for child's education"])
+tbl13$weight[tbl13$Group=="Others with SLs for child's education"] <- tbl13$weight[tbl13$Group=="Others with SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="Others with SLs for child's education"])
+tbl13$weight[tbl13$Group=="Black without SLs for child's education"] <- tbl13$weight[tbl13$Group=="Black without SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="Black without SLs for child's education"])
+tbl13$weight[tbl13$Group=="White without SLs for child's education"] <- tbl13$weight[tbl13$Group=="White without SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="White without SLs for child's education"])
+tbl13$weight[tbl13$Group=="Hispanic without SLs for child's education"] <- tbl13$weight[tbl13$Group=="Hispanic without SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="Hispanic without SLs for child's education"])
+tbl13$weight[tbl13$Group=="Others without SLs for child's education"] <- tbl13$weight[tbl13$Group=="Others without SLs for child's education"] / sum(tbl13$weight[tbl13$Group=="Others without SLs for child's education"])
+tbl13 <- reshape2::dcast(data=tbl13, Group ~ GH1, value.var="weight")
+tbl13 <- tbl13[, c(1, 5, 4, 3, 2)]
+tbl13$`Pay rent` <- percent(tbl13$`Pay rent`, accuracy=0.1)
+tbl13$`Own home with a mortgage or loan` <- percent(tbl13$`Own home with a mortgage or loan`, accuracy=0.1)
+tbl13$`Own home free and clear (without a mortgage or loan)` <- percent(tbl13$`Own home free and clear (without a mortgage or loan)`, accuracy=0.1)
+tbl13$`Neither own home nor pay rent` <- percent(tbl13$`Neither own home nor pay rent`, accuracy=0.1)
+kable13 <- kable(tbl13, caption="Home ownership status", row.names=FALSE, col.names=c("Group", "Pay rent", "Own home with a mortgage or loan", "Own home free and clear (without a mortgage or loan)", "Neither own home nor pay rent"), align = "lcccc")
+```
+
+```{r tbl14, echo=FALSE}
+# Unpaid credit card debt 
+shedC3 <- shed %>% filter(C3 %in% c("No", "Yes")) 
+tbl14 <- aggregate(data=shedC3, weight ~ Group + C3, FUN=sum)
+tbl14$weight[tbl14$Group=="Black with SLs for child's education"] <- tbl14$weight[tbl14$Group=="Black with SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="Black with SLs for child's education"])
+tbl14$weight[tbl14$Group=="White with SLs for child's education"] <- tbl14$weight[tbl14$Group=="White with SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="White with SLs for child's education"])
+tbl14$weight[tbl14$Group=="Hispanic with SLs for child's education"] <- tbl14$weight[tbl14$Group=="Hispanic with SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="Hispanic with SLs for child's education"])
+tbl14$weight[tbl14$Group=="Others with SLs for child's education"] <- tbl14$weight[tbl14$Group=="Others with SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="Others with SLs for child's education"])
+tbl14$weight[tbl14$Group=="Black without SLs for child's education"] <- tbl14$weight[tbl14$Group=="Black without SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="Black without SLs for child's education"])
+tbl14$weight[tbl14$Group=="White without SLs for child's education"] <- tbl14$weight[tbl14$Group=="White without SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="White without SLs for child's education"])
+tbl14$weight[tbl14$Group=="Hispanic without SLs for child's education"] <- tbl14$weight[tbl14$Group=="Hispanic without SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="Hispanic without SLs for child's education"])
+tbl14$weight[tbl14$Group=="Others without SLs for child's education"] <- tbl14$weight[tbl14$Group=="Others without SLs for child's education"] / sum(tbl14$weight[tbl14$Group=="Others without SLs for child's education"])
+tbl14 <- reshape2::dcast(data=tbl14, Group ~ C3, value.var="weight")
+tbl14$Yes <- percent(tbl14$Yes, accuracy=0.1)
+tbl14$No <- percent(tbl14$No, accuracy=0.1)
+kable14 <- kable(tbl14, caption="Responses to 'Do you currently have any outstanding unpaid credit card debt?'", row.names=FALSE, align = "lcc")
+```
+
+```{r tbl15, echo=FALSE}
+# Frequency of unpaid credit card debt 
+shedC4A <- shed %>% filter((C4A %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+shedC4A$C4A[shedC4A$C4A=="Never carried an unpaid balance (always pay in full)"] <- "Never carried an unpaid balance"
+tbl15 <- aggregate(data=shedC4A, weight ~ Group + C4A, FUN=sum)
+tbl15$weight[tbl15$Group=="Black with SLs for child's education"] <- tbl15$weight[tbl15$Group=="Black with SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="Black with SLs for child's education"])
+tbl15$weight[tbl15$Group=="White with SLs for child's education"] <- tbl15$weight[tbl15$Group=="White with SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="White with SLs for child's education"])
+tbl15$weight[tbl15$Group=="Hispanic with SLs for child's education"] <- tbl15$weight[tbl15$Group=="Hispanic with SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="Hispanic with SLs for child's education"])
+tbl15$weight[tbl15$Group=="Others with SLs for child's education"] <- tbl15$weight[tbl15$Group=="Others with SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="Others with SLs for child's education"])
+tbl15$weight[tbl15$Group=="Black without SLs for child's education"] <- tbl15$weight[tbl15$Group=="Black without SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="Black without SLs for child's education"])
+tbl15$weight[tbl15$Group=="White without SLs for child's education"] <- tbl15$weight[tbl15$Group=="White without SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="White without SLs for child's education"])
+tbl15$weight[tbl15$Group=="Hispanic without SLs for child's education"] <- tbl15$weight[tbl15$Group=="Hispanic without SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="Hispanic without SLs for child's education"])
+tbl15$weight[tbl15$Group=="Others without SLs for child's education"] <- tbl15$weight[tbl15$Group=="Others without SLs for child's education"] / sum(tbl15$weight[tbl15$Group=="Others without SLs for child's education"])
+tbl15 <- reshape2::dcast(data=tbl15, Group ~ C4A, value.var="weight")
+tbl15 <- tbl15[, c(1, 3, 4, 5, 2)]
+tbl15$`Never carried an unpaid balance` <- percent(tbl15$`Never carried an unpaid balance`, accuracy=0.1)
+tbl15$`Once` <- percent(tbl15$`Once`, accuracy=0.1)
+tbl15$`Some of the time` <- percent(tbl15$`Some of the time`, accuracy=0.1)
+tbl15$`Most or all of the time` <- percent(tbl15$`Most or all of the time`, accuracy=0.1)
+kable15 <- kable(tbl15, caption="Responses to 'In the past 12 months, how frequently have you carried an unpaid balance on one or more of your credit cards?'", row.names=FALSE, col.names=c("Group", "Never carried an unpaid balance", "Once", "Some of the time", "Most or all of the time"), align = "lcccc")
+```
+
+```{r tbl16, echo=FALSE}
+# Cashed out of retirement plan 
+shedK5A <- shed %>% filter((K5A %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl16 <- aggregate(data=shedK5A, weight ~ Group + K5A, FUN=sum)
+tbl16$weight[tbl16$Group=="Black with SLs for child's education"] <- tbl16$weight[tbl16$Group=="Black with SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="Black with SLs for child's education"])
+tbl16$weight[tbl16$Group=="White with SLs for child's education"] <- tbl16$weight[tbl16$Group=="White with SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="White with SLs for child's education"])
+tbl16$weight[tbl16$Group=="Hispanic with SLs for child's education"] <- tbl16$weight[tbl16$Group=="Hispanic with SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="Hispanic with SLs for child's education"])
+tbl16$weight[tbl16$Group=="Others with SLs for child's education"] <- tbl16$weight[tbl16$Group=="Others with SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="Others with SLs for child's education"])
+tbl16$weight[tbl16$Group=="Black without SLs for child's education"] <- tbl16$weight[tbl16$Group=="Black without SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="Black without SLs for child's education"])
+tbl16$weight[tbl16$Group=="White without SLs for child's education"] <- tbl16$weight[tbl16$Group=="White without SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="White without SLs for child's education"])
+tbl16$weight[tbl16$Group=="Hispanic without SLs for child's education"] <- tbl16$weight[tbl16$Group=="Hispanic without SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="Hispanic without SLs for child's education"])
+tbl16$weight[tbl16$Group=="Others without SLs for child's education"] <- tbl16$weight[tbl16$Group=="Others without SLs for child's education"] / sum(tbl16$weight[tbl16$Group=="Others without SLs for child's education"])
+tbl16 <- reshape2::dcast(data=tbl16, Group ~ K5A, value.var="weight")
+tbl16 <- tbl16[, c(1, 2, 3, 5, 4)]
+tbl16$`No` <- percent(tbl16$`No`, accuracy=0.1)
+tbl16$`Yes, borrowed money` <- percent(tbl16$`Yes, borrowed money`, accuracy=0.1)
+tbl16$`Yes, cashed out` <- percent(tbl16$`Yes, cashed out`, accuracy=0.1)
+tbl16$`Yes, both` <- percent(tbl16$`Yes, both`, accuracy=0.1)
+kable16 <- kable(tbl16, caption="Responses to 'In the past 12 months, have you borrowed money from or cashed out (permanently withdrawn) money from any of your retirement savings accounts?'", row.names=FALSE, align = "lcccc")
+```
+
+```{r tbl17, echo=FALSE}
+shedI20 <- shed %>% filter(I20 != "Refused")
+tbl17 <- aggregate(data=shedI20, weight ~ Group + I20, FUN=sum)
+tbl17$weight[tbl17$Group=="Black with SLs for child's education"] <- tbl17$weight[tbl17$Group=="Black with SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="Black with SLs for child's education"])
+tbl17$weight[tbl17$Group=="White with SLs for child's education"] <- tbl17$weight[tbl17$Group=="White with SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="White with SLs for child's education"])
+tbl17$weight[tbl17$Group=="Hispanic with SLs for child's education"] <- tbl17$weight[tbl17$Group=="Hispanic with SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="Hispanic with SLs for child's education"])
+tbl17$weight[tbl17$Group=="Others with SLs for child's education"] <- tbl17$weight[tbl17$Group=="Others with SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="Others with SLs for child's education"])
+tbl17$weight[tbl17$Group=="Black without SLs for child's education"] <- tbl17$weight[tbl17$Group=="Black without SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="Black without SLs for child's education"])
+tbl17$weight[tbl17$Group=="White without SLs for child's education"] <- tbl17$weight[tbl17$Group=="White without SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="White without SLs for child's education"])
+tbl17$weight[tbl17$Group=="Hispanic without SLs for child's education"] <- tbl17$weight[tbl17$Group=="Hispanic without SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="Hispanic without SLs for child's education"])
+tbl17$weight[tbl17$Group=="Others without SLs for child's education"] <- tbl17$weight[tbl17$Group=="Others without SLs for child's education"] / sum(tbl17$weight[tbl17$Group=="Others without SLs for child's education"])
+tbl17 <- reshape2::dcast(data=tbl17, Group ~ I20, value.var="weight")
+tbl17 <- tbl17[, c(1, 2, 4, 3)]
+tbl17$`Less than your income` <- percent(tbl17$`Less than your income`, accuracy=0.1)
+tbl17$`The same as your income` <- percent(tbl17$`The same as your income`, accuracy=0.1)
+tbl17$`More than your income` <- percent(tbl17$`More than your income`, accuracy=0.1)
+kable17 <- kable(tbl17, caption="Responses to 'In the past month, would you say that your and your spouse's/partner's total spending was:'", row.names=FALSE, align = "lccc")
+```
+
+```{r tbl18, echo=FALSE}
+# Regular financial support from adult children
+shedFS30b <- shed %>% filter(FS30_b %in% c("Yes", "No"))
+tbl18 <- aggregate(data=shedFS30b, weight ~ Group + FS30_b, FUN=sum)
+tbl18$weight[tbl18$Group=="Black with SLs for child's education"] <- tbl18$weight[tbl18$Group=="Black with SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="Black with SLs for child's education"])
+tbl18$weight[tbl18$Group=="White with SLs for child's education"] <- tbl18$weight[tbl18$Group=="White with SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="White with SLs for child's education"])
+tbl18$weight[tbl18$Group=="Hispanic with SLs for child's education"] <- tbl18$weight[tbl18$Group=="Hispanic with SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="Hispanic with SLs for child's education"])
+tbl18$weight[tbl18$Group=="Others with SLs for child's education"] <- tbl18$weight[tbl18$Group=="Others with SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="Others with SLs for child's education"])
+tbl18$weight[tbl18$Group=="Black without SLs for child's education"] <- tbl18$weight[tbl18$Group=="Black without SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="Black without SLs for child's education"])
+tbl18$weight[tbl18$Group=="White without SLs for child's education"] <- tbl18$weight[tbl18$Group=="White without SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="White without SLs for child's education"])
+tbl18$weight[tbl18$Group=="Hispanic without SLs for child's education"] <- tbl18$weight[tbl18$Group=="Hispanic without SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="Hispanic without SLs for child's education"])
+tbl18$weight[tbl18$Group=="Others without SLs for child's education"] <- tbl18$weight[tbl18$Group=="Others without SLs for child's education"] / sum(tbl18$weight[tbl18$Group=="Others without SLs for child's education"])
+tbl18 <- reshape2::dcast(data=tbl18, Group ~ FS30_b, value.var="weight")
+tbl18$No <- percent(tbl18$No, accuracy=0.1)
+tbl18$Yes <- percent(tbl18$Yes, accuracy=0.1)
+kable18 <- kable(tbl18, caption="Responses to 'Who outside of your household provides you with regular financial support or helps you with bill payments? [My adult child]'", row.names=FALSE, align = "lcc")
+```
+
+```{r tbl19, echo=FALSE}
+# Emergency or rainy day funds >= 3 months expenses
+shedEF1 <- shed %>% filter(EF1 %in% c("Yes", "No"))
+tbl19 <- aggregate(data=shedEF1, weight ~ Group + EF1, FUN=sum)
+tbl19$weight[tbl19$Group=="Black with SLs for child's education"] <- tbl19$weight[tbl19$Group=="Black with SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="Black with SLs for child's education"])
+tbl19$weight[tbl19$Group=="White with SLs for child's education"] <- tbl19$weight[tbl19$Group=="White with SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="White with SLs for child's education"])
+tbl19$weight[tbl19$Group=="Hispanic with SLs for child's education"] <- tbl19$weight[tbl19$Group=="Hispanic with SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="Hispanic with SLs for child's education"])
+tbl19$weight[tbl19$Group=="Others with SLs for child's education"] <- tbl19$weight[tbl19$Group=="Others with SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="Others with SLs for child's education"])
+tbl19$weight[tbl19$Group=="Black without SLs for child's education"] <- tbl19$weight[tbl19$Group=="Black without SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="Black without SLs for child's education"])
+tbl19$weight[tbl19$Group=="White without SLs for child's education"] <- tbl19$weight[tbl19$Group=="White without SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="White without SLs for child's education"])
+tbl19$weight[tbl19$Group=="Hispanic without SLs for child's education"] <- tbl19$weight[tbl19$Group=="Hispanic without SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="Hispanic without SLs for child's education"])
+tbl19$weight[tbl19$Group=="Others without SLs for child's education"] <- tbl19$weight[tbl19$Group=="Others without SLs for child's education"] / sum(tbl19$weight[tbl19$Group=="Others without SLs for child's education"])
+tbl19 <- reshape2::dcast(data=tbl19, Group ~ EF1, value.var="weight")
+tbl19$No <- percent(tbl19$No, accuracy=0.1)
+tbl19$Yes <- percent(tbl19$Yes, accuracy=0.1)
+kable19 <- kable(tbl19, caption="Responses to 'Have you set aside emergency or rainy day funds that would cover your expenses for 3 months in case of sickness, job loss, economic downturn, or other emergencies?'", row.names=FALSE, align = "lcc")
+```
+
+```{r tbl20, echo=FALSE}
+# Ability to cover 3 months of expenses
+shedEF2 <- shed %>% filter(EF2 %in% c("Yes", "No"))
+tbl20 <- aggregate(data=shedEF2, weight ~ Group + EF2, FUN=sum)
+tbl20$weight[tbl20$Group=="Black with SLs for child's education"] <- tbl20$weight[tbl20$Group=="Black with SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="Black with SLs for child's education"])
+tbl20$weight[tbl20$Group=="White with SLs for child's education"] <- tbl20$weight[tbl20$Group=="White with SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="White with SLs for child's education"])
+tbl20$weight[tbl20$Group=="Hispanic with SLs for child's education"] <- tbl20$weight[tbl20$Group=="Hispanic with SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="Hispanic with SLs for child's education"])
+tbl20$weight[tbl20$Group=="Others with SLs for child's education"] <- tbl20$weight[tbl20$Group=="Others with SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="Others with SLs for child's education"])
+tbl20$weight[tbl20$Group=="Black without SLs for child's education"] <- tbl20$weight[tbl20$Group=="Black without SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="Black without SLs for child's education"])
+tbl20$weight[tbl20$Group=="White without SLs for child's education"] <- tbl20$weight[tbl20$Group=="White without SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="White without SLs for child's education"])
+tbl20$weight[tbl20$Group=="Hispanic without SLs for child's education"] <- tbl20$weight[tbl20$Group=="Hispanic without SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="Hispanic without SLs for child's education"])
+tbl20$weight[tbl20$Group=="Others without SLs for child's education"] <- tbl20$weight[tbl20$Group=="Others without SLs for child's education"] / sum(tbl20$weight[tbl20$Group=="Others without SLs for child's education"])
+tbl20 <- reshape2::dcast(data=tbl20, Group ~ EF2, value.var="weight")
+tbl20$No <- percent(tbl20$No, accuracy=0.1)
+tbl20$Yes <- percent(tbl20$Yes, accuracy=0.1)
+kable20 <- kable(tbl20, caption="Responses to 'If you were to lose your main source of income (for example, job or government benefits), could you cover your expenses for 3 months by borrowing money, using savings, or selling assets?'", row.names=FALSE, align = "lcc")
+```
+
+```{r tbl21, echo=FALSE}
+# Ability to pay this month's bills in full
+shedEF5A <- shed %>% filter(EF5A != "Refused")
+shedEF5A$EF5A[shedEF5A$EF5A=="Able to pay all bills"] <- "I will be able to pay all of my bills in full"
+shedEF5A$EF5A[shedEF5A$EF5A=="Can’t pay some bills"] <- "I cannot pay some bills or will only make a partial payment on some of them" 
+shedEF5A$EF5A[shedEF5A$EF5A=="Can\x92t pay some bills"] <- "I cannot pay some bills or will only make a partial payment on some of them" 
+tbl21 <- aggregate(data=shedEF5A, weight ~ Group + EF5A, FUN=sum)
+tbl21$weight[tbl21$Group=="Black with SLs for child's education"] <- tbl21$weight[tbl21$Group=="Black with SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="Black with SLs for child's education"])
+tbl21$weight[tbl21$Group=="White with SLs for child's education"] <- tbl21$weight[tbl21$Group=="White with SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="White with SLs for child's education"])
+tbl21$weight[tbl21$Group=="Hispanic with SLs for child's education"] <- tbl21$weight[tbl21$Group=="Hispanic with SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="Hispanic with SLs for child's education"])
+tbl21$weight[tbl21$Group=="Others with SLs for child's education"] <- tbl21$weight[tbl21$Group=="Others with SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="Others with SLs for child's education"])
+tbl21$weight[tbl21$Group=="Black without SLs for child's education"] <- tbl21$weight[tbl21$Group=="Black without SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="Black without SLs for child's education"])
+tbl21$weight[tbl21$Group=="White without SLs for child's education"] <- tbl21$weight[tbl21$Group=="White without SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="White without SLs for child's education"])
+tbl21$weight[tbl21$Group=="Hispanic without SLs for child's education"] <- tbl21$weight[tbl21$Group=="Hispanic without SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="Hispanic without SLs for child's education"])
+tbl21$weight[tbl21$Group=="Others without SLs for child's education"] <- tbl21$weight[tbl21$Group=="Others without SLs for child's education"] / sum(tbl21$weight[tbl21$Group=="Others without SLs for child's education"])
+tbl21 <- reshape2::dcast(data=tbl21, Group ~ EF5A, value.var="weight")
+tbl21$`I cannot pay some bills or will only make a partial payment on some of them` <- percent(tbl21$`I cannot pay some bills or will only make a partial payment on some of them`, accuracy=0.1)
+tbl21$`I will be able to pay all of my bills in full` <- percent(tbl21$`I will be able to pay all of my bills in full`, accuracy=0.1)
+kable21 <- kable(tbl21, caption="Responses to 'Which best describes your ability to pay all of your bills in full this month?'", row.names=FALSE, col.names=c("Group", "I cannot pay some bills or will only make a partial payment on some of them", "I will be able to pay all of my bills in full"), align = "lcc")
+```
+
+```{r tbl22, echo=FALSE}
+# Impact of a sudden $400 expense
+shedEF5B <- shed %>% filter((EF5B %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+shedEF5B$EF5B[shedEF5B$EF5B=="Would still be able to pay all bills"] <- "I would still be able to pay all of my other bills in full"
+shedEF5B$EF5B[shedEF5B$EF5B=="Could not pay some bills"] <- "I could not pay some other bills or would only make a partial payment on some of them"
+tbl22 <- aggregate(data=shedEF5B, weight ~ Group + EF5B, FUN=sum)
+tbl22$weight[tbl22$Group=="Black with SLs for child's education"] <- tbl22$weight[tbl22$Group=="Black with SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="Black with SLs for child's education"])
+tbl22$weight[tbl22$Group=="White with SLs for child's education"] <- tbl22$weight[tbl22$Group=="White with SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="White with SLs for child's education"])
+tbl22$weight[tbl22$Group=="Hispanic with SLs for child's education"] <- tbl22$weight[tbl22$Group=="Hispanic with SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="Hispanic with SLs for child's education"])
+tbl22$weight[tbl22$Group=="Others with SLs for child's education"] <- tbl22$weight[tbl22$Group=="Others with SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="Others with SLs for child's education"])
+tbl22$weight[tbl22$Group=="Black without SLs for child's education"] <- tbl22$weight[tbl22$Group=="Black without SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="Black without SLs for child's education"])
+tbl22$weight[tbl22$Group=="White without SLs for child's education"] <- tbl22$weight[tbl22$Group=="White without SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="White without SLs for child's education"])
+tbl22$weight[tbl22$Group=="Hispanic without SLs for child's education"] <- tbl22$weight[tbl22$Group=="Hispanic without SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="Hispanic without SLs for child's education"])
+tbl22$weight[tbl22$Group=="Others without SLs for child's education"] <- tbl22$weight[tbl22$Group=="Others without SLs for child's education"] / sum(tbl22$weight[tbl22$Group=="Others without SLs for child's education"])
+tbl22 <- reshape2::dcast(data=tbl22, Group ~ EF5B, value.var="weight")
+tbl22$`I could not pay some other bills or would only make a partial payment on some of them` <- percent(tbl22$`I could not pay some other bills or would only make a partial payment on some of them`, accuracy=0.1)
+tbl22$`I would still be able to pay all of my other bills in full` <- percent(tbl22$`I would still be able to pay all of my other bills in full`, accuracy=0.1)
+kable22 <- kable(tbl22, caption="Responses to 'How would a $400 emergency expense that you had to pay impact your ability to pay your other bills this month?'", row.names=FALSE, col.names=c("Group", "I could not pay some other bills or would only make a partial payment on some of them", "I would still be able to pay all of my other bills in full"), align = "lcc")
+```
+
+```{r tbl23, echo=FALSE}
+# Inability to pay student loan bill this month
+shedEF6AF <- shed %>% filter((EF6A_f %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl23 <- aggregate(data=shedEF6AF, weight ~ Group + EF6A_f, FUN=sum)
+tbl23$weight[tbl23$Group=="Black with SLs for child's education"] <- tbl23$weight[tbl23$Group=="Black with SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="Black with SLs for child's education"])
+tbl23$weight[tbl23$Group=="White with SLs for child's education"] <- tbl23$weight[tbl23$Group=="White with SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="White with SLs for child's education"])
+tbl23$weight[tbl23$Group=="Hispanic with SLs for child's education"] <- tbl23$weight[tbl23$Group=="Hispanic with SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="Hispanic with SLs for child's education"])
+tbl23$weight[tbl23$Group=="Others with SLs for child's education"] <- tbl23$weight[tbl23$Group=="Others with SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="Others with SLs for child's education"])
+tbl23$weight[tbl23$Group=="Black without SLs for child's education"] <- tbl23$weight[tbl23$Group=="Black without SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="Black without SLs for child's education"])
+tbl23$weight[tbl23$Group=="White without SLs for child's education"] <- tbl23$weight[tbl23$Group=="White without SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="White without SLs for child's education"])
+tbl23$weight[tbl23$Group=="Hispanic without SLs for child's education"] <- tbl23$weight[tbl23$Group=="Hispanic without SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="Hispanic without SLs for child's education"])
+tbl23$weight[tbl23$Group=="Others without SLs for child's education"] <- tbl23$weight[tbl23$Group=="Others without SLs for child's education"] / sum(tbl23$weight[tbl23$Group=="Others without SLs for child's education"])
+tbl23 <- reshape2::dcast(data=tbl23, Group ~ EF6A_f, value.var="weight")
+tbl23$No <- percent(tbl23$No, accuracy=0.1)
+tbl23$Yes <- percent(tbl23$Yes, accuracy=0.1)
+kable23 <- kable(tbl23, caption="Responses to 'Are you expecting to be unable to pay or only make a partial payment on each of the following bills this month? [Student loan]'", row.names=FALSE, align = "lcc")
+```
+
+```{r tbl24, echo=FALSE}
+# Receive help with rent or mortgage
+shedFS20A <- shed %>% filter((FS20_a %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl24 <- aggregate(data=shedFS20A, weight ~ Group + FS20_a, FUN=sum)
+tbl24$weight[tbl24$Group=="Black with SLs for child's education"] <- tbl24$weight[tbl24$Group=="Black with SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="Black with SLs for child's education"])
+tbl24$weight[tbl24$Group=="White with SLs for child's education"] <- tbl24$weight[tbl24$Group=="White with SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="White with SLs for child's education"])
+tbl24$weight[tbl24$Group=="Hispanic with SLs for child's education"] <- tbl24$weight[tbl24$Group=="Hispanic with SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="Hispanic with SLs for child's education"])
+tbl24$weight[tbl24$Group=="Others with SLs for child's education"] <- tbl24$weight[tbl24$Group=="Others with SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="Others with SLs for child's education"])
+tbl24$weight[tbl24$Group=="Black without SLs for child's education"] <- tbl24$weight[tbl24$Group=="Black without SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="Black without SLs for child's education"])
+tbl24$weight[tbl24$Group=="White without SLs for child's education"] <- tbl24$weight[tbl24$Group=="White without SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="White without SLs for child's education"])
+tbl24$weight[tbl24$Group=="Hispanic without SLs for child's education"] <- tbl24$weight[tbl24$Group=="Hispanic without SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="Hispanic without SLs for child's education"])
+tbl24$weight[tbl24$Group=="Others without SLs for child's education"] <- tbl24$weight[tbl24$Group=="Others without SLs for child's education"] / sum(tbl24$weight[tbl24$Group=="Others without SLs for child's education"])
+tbl24 <- reshape2::dcast(data=tbl24, Group ~ FS20_a, value.var="weight")
+tbl24 <- tbl24[, c(1, 3)]
+tbl24$Yes <- percent(tbl24$Yes, accuracy=0.1)
+# Receive help with education expenses or student loans
+shedFS20B <- shed %>% filter((FS20_b %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl25 <- aggregate(data=shedFS20B, weight ~ Group + FS20_b, FUN=sum)
+tbl25$weight[tbl25$Group=="Black with SLs for child's education"] <- tbl25$weight[tbl25$Group=="Black with SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="Black with SLs for child's education"])
+tbl25$weight[tbl25$Group=="White with SLs for child's education"] <- tbl25$weight[tbl25$Group=="White with SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="White with SLs for child's education"])
+tbl25$weight[tbl25$Group=="Hispanic with SLs for child's education"] <- tbl25$weight[tbl25$Group=="Hispanic with SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="Hispanic with SLs for child's education"])
+tbl25$weight[tbl25$Group=="Others with SLs for child's education"] <- tbl25$weight[tbl25$Group=="Others with SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="Others with SLs for child's education"])
+tbl25$weight[tbl25$Group=="Black without SLs for child's education"] <- tbl25$weight[tbl25$Group=="Black without SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="Black without SLs for child's education"])
+tbl25$weight[tbl25$Group=="White without SLs for child's education"] <- tbl25$weight[tbl25$Group=="White without SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="White without SLs for child's education"])
+tbl25$weight[tbl25$Group=="Hispanic without SLs for child's education"] <- tbl25$weight[tbl25$Group=="Hispanic without SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="Hispanic without SLs for child's education"])
+tbl25$weight[tbl25$Group=="Others without SLs for child's education"] <- tbl25$weight[tbl25$Group=="Others without SLs for child's education"] / sum(tbl25$weight[tbl25$Group=="Others without SLs for child's education"])
+tbl25 <- reshape2::dcast(data=tbl25, Group ~ FS20_b, value.var="weight")
+tbl25 <- tbl25[, c(1, 3)]
+tbl25$Yes <- percent(tbl25$Yes, accuracy=0.1)
+# Receive help with car payment
+shedFS20C <- shed %>% filter((FS20_c %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl26 <- aggregate(data=shedFS20C, weight ~ Group + FS20_c, FUN=sum)
+tbl26$weight[tbl26$Group=="Black with SLs for child's education"] <- tbl26$weight[tbl26$Group=="Black with SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="Black with SLs for child's education"])
+tbl26$weight[tbl26$Group=="White with SLs for child's education"] <- tbl26$weight[tbl26$Group=="White with SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="White with SLs for child's education"])
+tbl26$weight[tbl26$Group=="Hispanic with SLs for child's education"] <- tbl26$weight[tbl26$Group=="Hispanic with SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="Hispanic with SLs for child's education"])
+tbl26$weight[tbl26$Group=="Others with SLs for child's education"] <- tbl26$weight[tbl26$Group=="Others with SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="Others with SLs for child's education"])
+tbl26$weight[tbl26$Group=="Black without SLs for child's education"] <- tbl26$weight[tbl26$Group=="Black without SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="Black without SLs for child's education"])
+tbl26$weight[tbl26$Group=="White without SLs for child's education"] <- tbl26$weight[tbl26$Group=="White without SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="White without SLs for child's education"])
+tbl26$weight[tbl26$Group=="Hispanic without SLs for child's education"] <- tbl26$weight[tbl26$Group=="Hispanic without SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="Hispanic without SLs for child's education"])
+tbl26$weight[tbl26$Group=="Others without SLs for child's education"] <- tbl26$weight[tbl26$Group=="Others without SLs for child's education"] / sum(tbl26$weight[tbl26$Group=="Others without SLs for child's education"])
+tbl26 <- reshape2::dcast(data=tbl26, Group ~ FS20_c, value.var="weight")
+tbl26 <- tbl26[, c(1, 3)]
+tbl26$Yes <- percent(tbl26$Yes, accuracy=0.1)
+# Receive help with other bills
+shedFS20D <- shed %>% filter((FS20_d %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl27 <- aggregate(data=shedFS20D, weight ~ Group + FS20_d, FUN=sum)
+tbl27$weight[tbl27$Group=="Black with SLs for child's education"] <- tbl27$weight[tbl27$Group=="Black with SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="Black with SLs for child's education"])
+tbl27$weight[tbl27$Group=="White with SLs for child's education"] <- tbl27$weight[tbl27$Group=="White with SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="White with SLs for child's education"])
+tbl27$weight[tbl27$Group=="Hispanic with SLs for child's education"] <- tbl27$weight[tbl27$Group=="Hispanic with SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="Hispanic with SLs for child's education"])
+tbl27$weight[tbl27$Group=="Others with SLs for child's education"] <- tbl27$weight[tbl27$Group=="Others with SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="Others with SLs for child's education"])
+tbl27$weight[tbl27$Group=="Black without SLs for child's education"] <- tbl27$weight[tbl27$Group=="Black without SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="Black without SLs for child's education"])
+tbl27$weight[tbl27$Group=="White without SLs for child's education"] <- tbl27$weight[tbl27$Group=="White without SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="White without SLs for child's education"])
+tbl27$weight[tbl27$Group=="Hispanic without SLs for child's education"] <- tbl27$weight[tbl27$Group=="Hispanic without SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="Hispanic without SLs for child's education"])
+tbl27$weight[tbl27$Group=="Others without SLs for child's education"] <- tbl27$weight[tbl27$Group=="Others without SLs for child's education"] / sum(tbl27$weight[tbl27$Group=="Others without SLs for child's education"])
+tbl27 <- reshape2::dcast(data=tbl27, Group ~ FS20_d, value.var="weight")
+tbl27 <- tbl27[, c(1, 3)]
+tbl27$Yes <- percent(tbl27$Yes, accuracy=0.1)
+# Receive help in general
+shedFS20E <- shed %>% filter((FS20_e %in% c("Not In Universe (not asked)", "Refused", "")==FALSE))
+tbl28 <- aggregate(data=shedFS20E, weight ~ Group + FS20_e, FUN=sum)
+tbl28$weight[tbl28$Group=="Black with SLs for child's education"] <- tbl28$weight[tbl28$Group=="Black with SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="Black with SLs for child's education"])
+tbl28$weight[tbl28$Group=="White with SLs for child's education"] <- tbl28$weight[tbl28$Group=="White with SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="White with SLs for child's education"])
+tbl28$weight[tbl28$Group=="Hispanic with SLs for child's education"] <- tbl28$weight[tbl28$Group=="Hispanic with SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="Hispanic with SLs for child's education"])
+tbl28$weight[tbl28$Group=="Others with SLs for child's education"] <- tbl28$weight[tbl28$Group=="Others with SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="Others with SLs for child's education"])
+tbl28$weight[tbl28$Group=="Black without SLs for child's education"] <- tbl28$weight[tbl28$Group=="Black without SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="Black without SLs for child's education"])
+tbl28$weight[tbl28$Group=="White without SLs for child's education"] <- tbl28$weight[tbl28$Group=="White without SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="White without SLs for child's education"])
+tbl28$weight[tbl28$Group=="Hispanic without SLs for child's education"] <- tbl28$weight[tbl28$Group=="Hispanic without SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="Hispanic without SLs for child's education"])
+tbl28$weight[tbl28$Group=="Others without SLs for child's education"] <- tbl28$weight[tbl28$Group=="Others without SLs for child's education"] / sum(tbl28$weight[tbl28$Group=="Others without SLs for child's education"])
+tbl28 <- reshape2::dcast(data=tbl28, Group ~ FS20_e, value.var="weight")
+tbl28 <- tbl28[, c(1, 3)]
+tbl28$Yes <- percent(tbl28$Yes, accuracy=0.1)
+tbl28a <- full_join(x=tbl24, 
+                    y=full_join(x=tbl25, 
+                                y=full_join(x=tbl26, 
+                                            y=full_join(x=tbl27, y=tbl28, by="Group"), 
+                                by="Group"), 
+                    by="Group"), 
+          by="Group")
+kable28 <- kable(tbl28a, caption="Responses to 'Do you receive each of the following types of financial support from people living outside of your household?'", row.names=FALSE, col.names=c("Group", "Help with rent or mortgage", "Help with education expenses or student loans", "Help with car payment", "Help with other bills", "Money for general expenses or anything else"), align = "lccccc")
+```
+
+```{r tbl29, echo=FALSE}
+# Rent because can't qualify for home mortgage
+shedR1E <- shed %>% filter((R1_e %in% c("Not In Universe (not asked)", "Refused", "", NA)==FALSE))
+tbl29 <- aggregate(data=shedR1E, weight ~ Group + R1_e, FUN=sum)
+tbl29$weight[tbl29$Group=="Black with SLs for child's education"] <- tbl29$weight[tbl29$Group=="Black with SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="Black with SLs for child's education"])
+tbl29$weight[tbl29$Group=="White with SLs for child's education"] <- tbl29$weight[tbl29$Group=="White with SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="White with SLs for child's education"])
+tbl29$weight[tbl29$Group=="Hispanic with SLs for child's education"] <- tbl29$weight[tbl29$Group=="Hispanic with SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="Hispanic with SLs for child's education"])
+tbl29$weight[tbl29$Group=="Others with SLs for child's education"] <- tbl29$weight[tbl29$Group=="Others with SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="Others with SLs for child's education"])
+tbl29$weight[tbl29$Group=="Black without SLs for child's education"] <- tbl29$weight[tbl29$Group=="Black without SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="Black without SLs for child's education"])
+tbl29$weight[tbl29$Group=="White without SLs for child's education"] <- tbl29$weight[tbl29$Group=="White without SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="White without SLs for child's education"])
+tbl29$weight[tbl29$Group=="Hispanic without SLs for child's education"] <- tbl29$weight[tbl29$Group=="Hispanic without SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="Hispanic without SLs for child's education"])
+tbl29$weight[tbl29$Group=="Others without SLs for child's education"] <- tbl29$weight[tbl29$Group=="Others without SLs for child's education"] / sum(tbl29$weight[tbl29$Group=="Others without SLs for child's education"])
+tbl29 <- reshape2::dcast(data=tbl29, Group ~ R1_e, value.var="weight")
+tbl29 <- tbl29[, c(1, 3)]
+tbl29$Yes <- percent(tbl29$Yes, accuracy=0.1)
+# Can't afford down payment for home
+shedR1F <- shed %>% filter((R1_f %in% c("Not In Universe (not asked)", "Refused", "", NA)==FALSE))
+tbl30 <- aggregate(data=shedR1F, weight ~ Group + R1_f, FUN=sum)
+tbl30$weight[tbl30$Group=="Black with SLs for child's education"] <- tbl30$weight[tbl30$Group=="Black with SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="Black with SLs for child's education"])
+tbl30$weight[tbl30$Group=="White with SLs for child's education"] <- tbl30$weight[tbl30$Group=="White with SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="White with SLs for child's education"])
+tbl30$weight[tbl30$Group=="Hispanic with SLs for child's education"] <- tbl30$weight[tbl30$Group=="Hispanic with SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="Hispanic with SLs for child's education"])
+tbl30$weight[tbl30$Group=="Others with SLs for child's education"] <- tbl30$weight[tbl30$Group=="Others with SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="Others with SLs for child's education"])
+tbl30$weight[tbl30$Group=="Black without SLs for child's education"] <- tbl30$weight[tbl30$Group=="Black without SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="Black without SLs for child's education"])
+tbl30$weight[tbl30$Group=="White without SLs for child's education"] <- tbl30$weight[tbl30$Group=="White without SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="White without SLs for child's education"])
+tbl30$weight[tbl30$Group=="Hispanic without SLs for child's education"] <- tbl30$weight[tbl30$Group=="Hispanic without SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="Hispanic without SLs for child's education"])
+tbl30$weight[tbl30$Group=="Others without SLs for child's education"] <- tbl30$weight[tbl30$Group=="Others without SLs for child's education"] / sum(tbl30$weight[tbl30$Group=="Others without SLs for child's education"])
+tbl30 <- reshape2::dcast(data=tbl30, Group ~ R1_f, value.var="weight")
+tbl30 <- tbl30[, c(1, 3)]
+tbl30$Yes <- percent(tbl30$Yes, accuracy=0.1)
+tbl30a <- full_join(x=tbl29, y=tbl30, by="Group")
+kable30 <- kable(tbl30a, caption="Responses to 'Are each of the following a reason why you rent your home rather than own?' [Selected items]", row.names=FALSE, col.names=c("Group", "Can't qualify for home mortgage", "Can't afford down payment for home"), align = "lcc")
+```
+
+```{r tbl32, echo=FALSE}
+# Credit scores
+shedPPFS1482 <- shed %>% filter((ppfs1482 %in% c("Not In Universe (not asked)", "Refused", "", NA)==FALSE))
+shedPPFS1482$ppfs1482 <- factor(shedPPFS1482$ppfs1482, levels = c(
+  "Excellent", 
+  "Good", 
+  "Fair", 
+  "Poor", 
+  "Very poor"
+))
+tbl32 <- aggregate(data=shedPPFS1482, weight ~ Group + ppfs1482, FUN=sum)
+tbl32 <- tbl32 %>% filter(ppfs1482 != "Don’t know")
+tbl32$weight[tbl32$Group=="Black with SLs for child's education"] <- tbl32$weight[tbl32$Group=="Black with SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="Black with SLs for child's education"])
+tbl32$weight[tbl32$Group=="White with SLs for child's education"] <- tbl32$weight[tbl32$Group=="White with SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="White with SLs for child's education"])
+tbl32$weight[tbl32$Group=="Hispanic with SLs for child's education"] <- tbl32$weight[tbl32$Group=="Hispanic with SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="Hispanic with SLs for child's education"])
+tbl32$weight[tbl32$Group=="Others with SLs for child's education"] <- tbl32$weight[tbl32$Group=="Others with SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="Others with SLs for child's education"])
+tbl32$weight[tbl32$Group=="Black without SLs for child's education"] <- tbl32$weight[tbl32$Group=="Black without SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="Black without SLs for child's education"])
+tbl32$weight[tbl32$Group=="White without SLs for child's education"] <- tbl32$weight[tbl32$Group=="White without SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="White without SLs for child's education"])
+tbl32$weight[tbl32$Group=="Hispanic without SLs for child's education"] <- tbl32$weight[tbl32$Group=="Hispanic without SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="Hispanic without SLs for child's education"])
+tbl32$weight[tbl32$Group=="Others without SLs for child's education"] <- tbl32$weight[tbl32$Group=="Others without SLs for child's education"] / sum(tbl32$weight[tbl32$Group=="Others without SLs for child's education"])
+tbl32$Group[tbl32$Group=="Black with SLs for child's education"] <- "Black with SLs"
+tbl32$Group[tbl32$Group=="White with SLs for child's education"] <- "White with SLs"
+tbl32$Group[tbl32$Group=="Hispanic with SLs for child's education"] <- "Hispanic with SLs"
+tbl32$Group[tbl32$Group=="Others with SLs for child's education"] <- "Others with SLs"
+tbl32$Group[tbl32$Group=="Black without SLs for child's education"] <- "Black without SLs"
+tbl32$Group[tbl32$Group=="White without SLs for child's education"] <- "White without SLs"
+tbl32$Group[tbl32$Group=="Hispanic without SLs for child's education"] <- "Hispanic without SLs"
+tbl32$Group[tbl32$Group=="Others without SLs for child's education"] <- "Others without SLs"
+gg4 <- ggplot(data=tbl32, mapping=aes(x=Group, y=weight, fill=ppfs1482)) + geom_bar(stat = "identity", position = "stack") + scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + scale_fill_brewer(palette="RdYlGn", direction=-1) + labs(y="Share of total", x="", fill="Credit score", title="Responses to 'Where do you think your credit score falls?'") + theme(text=element_text(family="serif"))
+```
+
+```{r savings, echo=FALSE}
+# What is the approximate total amount of your household's savings and investments?
+shedPPFS0596 <- shed %>% filter((ppfs0596 %in% c("Not In Universe (not asked)", "Not asked", "Not sure", "Refused", "", NA)==FALSE))
+shedPPFS0596$ppfs0596 <- factor(shedPPFS0596$ppfs0596, levels = c(
+  "$1,000,000 or more",
+  "$500,000 - $999,999",
+  "$250,000 - $499,999", 
+  "$100,000 - $249,999",
+  "$50,000 - $99,999", 
+  "Under $50,000"
+))
+tbl33 <- aggregate(data=shedPPFS0596, weight ~ Group + ppfs0596, FUN=sum)
+tbl33$weight[tbl33$Group=="Black with SLs for child's education"] <- tbl33$weight[tbl33$Group=="Black with SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="Black with SLs for child's education"])
+tbl33$weight[tbl33$Group=="White with SLs for child's education"] <- tbl33$weight[tbl33$Group=="White with SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="White with SLs for child's education"])
+tbl33$weight[tbl33$Group=="Hispanic with SLs for child's education"] <- tbl33$weight[tbl33$Group=="Hispanic with SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="Hispanic with SLs for child's education"])
+tbl33$weight[tbl33$Group=="Others with SLs for child's education"] <- tbl33$weight[tbl33$Group=="Others with SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="Others with SLs for child's education"])
+tbl33$weight[tbl33$Group=="Black without SLs for child's education"] <- tbl33$weight[tbl33$Group=="Black without SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="Black without SLs for child's education"])
+tbl33$weight[tbl33$Group=="White without SLs for child's education"] <- tbl33$weight[tbl33$Group=="White without SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="White without SLs for child's education"])
+tbl33$weight[tbl33$Group=="Hispanic without SLs for child's education"] <- tbl33$weight[tbl33$Group=="Hispanic without SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="Hispanic without SLs for child's education"])
+tbl33$weight[tbl33$Group=="Others without SLs for child's education"] <- tbl33$weight[tbl33$Group=="Others without SLs for child's education"] / sum(tbl33$weight[tbl33$Group=="Others without SLs for child's education"])
+tbl33$Group[tbl33$Group=="Black with SLs for child's education"] <- "Black with SLs"
+tbl33$Group[tbl33$Group=="White with SLs for child's education"] <- "White with SLs"
+tbl33$Group[tbl33$Group=="Hispanic with SLs for child's education"] <- "Hispanic with SLs"
+tbl33$Group[tbl33$Group=="Others with SLs for child's education"] <- "Others with SLs"
+tbl33$Group[tbl33$Group=="Black without SLs for child's education"] <- "Black without SLs"
+tbl33$Group[tbl33$Group=="White without SLs for child's education"] <- "White without SLs"
+tbl33$Group[tbl33$Group=="Hispanic without SLs for child's education"] <- "Hispanic without SLs"
+tbl33$Group[tbl33$Group=="Others without SLs for child's education"] <- "Others without SLs"
+gg3 <- ggplot(data=tbl33, mapping=aes(x=Group, y=weight, fill=ppfs0596)) + geom_bar(stat = "identity", position = "stack") + scale_y_continuous(labels = scales::percent_format(accuracy = 1)) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) + scale_fill_brewer(palette="RdYlGn", direction=-1) + labs(y="Share of total", x="", fill="Approximate amount", title="Savings/investments distribution of U.S. parents") + theme(text=element_text(family="serif"))
+```
+
+## About the data
+
+The Survey of Household Economics and Decisionmaking (SHED) is an annual survey of U.S. adults conducted by the Federal Reserve.[^1] For this analysis, the data releases reflecting surveys conducted in 2017, 2018, 2019, and 2020 were combined, which is necessary to get a large sample of parents who hold student loans for a child's education. The universe of our analysis is parents in the U.S.[^2]
+
+[^1]: The Federal Reserve has also published supplemental releases reflecting surveys conducted in April 2020 and July 2020. They are not integrated into this analysis.
+
+[^2]: Although we would liked to have filtered for parents of children aged 18+, the data are not available to make that filter.
+
+The SHED data releases fill a need for financial information on parents who take out loans, including Parent PLUS loans, to help cover the costs of their child's education.[^3] We cannot tell from the SHED data when the loan held by a parent is a Parent PlUS loan, which means this analysis spans both federal parent-loans and private parent-loans. 
+
+Note, as well, that while Parent PLUS loans are almost never taken out by a grandparent to pay for a grandchild's education, this restriction does not apply to private loans. The SHED questionnaire asks respondents whether they hold student loans for a child's or grandchild's education; as shorthand, this document will use the phrase "loans for a child's education," but the population referenced includes those who hold debt for a grandchild's education. 
+
+The following tables will explore how patterns in parents' need to take out loans in order to pay for a child's education can compound the racial wealth gap and other structural impediments to Black Americans' upward mobility.
+
+[^3]: The data do not distinguish between debt for higher education and debt for K-12 education, unfortunately.
+
+The tables that follow compare eight groups: parents who hold debt for a child's education, split across four racial/ethnic groups (Black, white, Hispanic,[^4] and others[^5]), and adults who do not hold this debt, again distinguishing across the four aforementioned groups.  
+
+[^4]: Anyone who identifies as Hispanic is included in this group, even if they also identify as Black, white, or another race. This appendix uses the term Hispanic, as specified by SHED. Because the Education Department data that comprises the basis for much of the main report uses the term "Latino," the main report cites statistics from this appendix in terms of Latino parent-borrowers. While these groups are not the same, we conform the language in the main report for simplicity and to minimize readers' confusion. 
+
+[^5]: Pulling out more racial/ethnic groups is possible but would likely lead to insufficient sample size for some groups.
+
+Table 1 below provides a summary of the SHED data for our comparison groups.
+
+```{r display1, echo=FALSE}
+kable3
+```
+
+According to these estimates, about 10.2 million U.S. parents hold student loans for a child's education. According to data from the Federal Student Aid Data Center, there were 3.7 million Parent PLUS loans with outstanding loan balances as of March 31, 2022. Both parents in a two-parent family may claim a loan, which means that, while there are 3.7 million Parent PLUS loans, there are more than 3.7 million Parent PLUS parent-borrowers. If we conservatively estimate that, when asked if they hold student loans for a child's education, both parents would have responded "yes" in at least 80% of Parent PLUS families, then we would have 6.7 million Parent PLUS borrowers. In such case, Parent PLUS borrowers make up around two-thirds of parents with student loans for their child's education, with the remainder holding only private student loans.
+
+Table 2 below shows the percentage of parents within each group that holds debt for a child's education.
+
+```{r lateaddition, echo=FALSE}
+kable0
+```
+
+## Characteristics of parents who hold student loans for a child's education
+
+This section provides data on the basic characteristics of parents who hold student loans for a child's education.
+
+Table 3 shows a basic breakdown by education attainment.[^7] Almost one-third of Black parents with student loans for a child's education have a high school diploma or less, which is lower than the percentage among Hispanic parents who hold these loans (54 percent) but more than the percentage among white parents and those of other races who hold this debt (26 percent and 17 percent, respectively).
+
+[^7]: More detailed breakdowns by educational attainment are possible; this is the simplest breakdown available.
+
+```{r display6, echo=FALSE}
+kable8 # Education level 
+```
+
+The figure below shows the age distribution of U.S. parents, filtered for those aged 30+. Among those who hold student loans for a child's education, Hispanic parents tend to be younger, whereas the age distributions of Black parent-borrowers and white parent-borrowers are not very different.
+
+```{r display5, echo=FALSE, fig.align = 'center'}
+gg1 # Age distribution
+```
+
+Table 4 below shows that, of those with student loans for a child's education, Black parents are the most likely to be retired, at 33 percent. For many of parent-borrowers, particularly for Black parents with these loans, monthly payments may be coming from Social Security or pension payments.
+
+```{r display4, echo=FALSE}
+kable6b # Retirement status
+```
+
+The figure below shows the distribution of U.S. parents by income. Compared to white parent-borrowers and those of other races, Black and Hispanic parents with student loans for a child's education are more likely to be low-income, with nearly 4 in 10 having incomes under \$50,000. While this is a lower share than Black and Hispanic parents who do not hold these loans, the differences by race remain stark; the median white parent with student loans for a child's education makes six figures.
+
+```{r display7, echo=FALSE, fig.align = 'center'}
+gg2 # Income 
+```
+
+Table 5 below shows that those with student loans for a child's education are more likely to be working, and of these, Black parents with these loans are the most likely to be working four or more jobs.
+
+```{r display3, echo=FALSE}
+kable6 # Number of jobs
+```
+
+## Parent-held student loans amid other barriers to wealth and financial security
+
+The tables in this section explore how parent-held loans can build on other existing financial challenges, especially for Black parents.
+
+Table 6 below shows that parent-borrowers' total debt for their children's education includes credit card debt more frequently for Black and Hispanic parents than for those of other groups, and it includes home equity loans less frequently for Black parents than for those of other groups. This is concerning given that credit card debt typically has interest rates that are more than triple those of student loans and home equity loans.[^8]
+
+[^8]: According to Investopedia, the median rate of interest for credit cards in 2021 was 19.5 percent. According to ValuePenguin, the average interest rate of a home equity loan is between 5 percent and 6 percent depending on the length of the loan.
+
+```{r display2, echo=FALSE}
+kable4
+```
+
+Table 7 below indicates that, of parents with student loans for a child's education, Black parents are the most likely to have student loans for their own education at 33.2 percent, two and a half times the percentage among white parents with student loans for a child's education, 13.2 percent.
+
+```{r kable5, echo=FALSE}
+kable5
+```
+
+Table 8 below confirms that parent-held loans shift repayment burdens to many parents who will struggle to repay, particularly Black parents. More than one-third of Black parents with student loans for a child's education said at the time of their survey that they are unable to fully pay their monthly student loan bill, compared to 20-23 percent among other groups. Of parents with their own student loans who do not hold student loans for a child's education, less than 13% expect to be unable to pay their monthly bill in full.
+
+```{r kable23, echo=FALSE}
+kable23
+```
+
+The figure below shows parents' total savings and investments. Among Black and Hispanic parents, those with student loans for a child's education have more in savings than those without this debt; the inverse is true for white parents and those of other races. Differences in savings across race are strong: 75 percent of Black parents with student loans for a child's education have less than \$100,000 in savings and investments, compared to less than 50 percent among white parents with these loans.
+
+Note that the figure below shows total savings and investments and are not net totals; it does not take into account debts.
+
+```{r gg3, echo=FALSE, fig.align = 'center'}
+gg3
+```
+
+Home ownership status reveals similar disparities. Among those with student loans for a child's education, about 9 in 10 white parents own a home, compared to 2 in 3 Black parents and 8 in 10 Hispanic parents or those of another race.
+
+```{r kable13, echo=FALSE}
+kable13
+```
+
+The figure below shows that Black and Hispanic parents are more likely to have a "Good" or "Excellent" credit score when they hold parent-held loans. However, white parents display higher frequencies of "Good" or "Excellent" scores regardless of whether they hold debt for a child's education.
+
+```{r gg4, echo=FALSE, fig.align = 'center'}
+gg4
+```
+
+Table 10 shows how often parents have had to borrow or cash out of their retirement savings accounts. Across the board, parents are more likely to have done so if they hold debt for a child's education. However, this is more common among Black and Hispanic parents.
+
+```{r kable16, echo=FALSE}
+kable16
+```
+
+Table 11 shows responses to a survey question asking respondents whether they think they could get by without their primary income for three months. Parents with student loans for a child's education responded "Yes" more often than those without this debt, but particularly among parent-borrowers, Black and Hispanic parents responded "Yes" much less often than did white parents, with a gap of nearly 20 percentage points.
+
+```{r kable20, echo=FALSE}
+kable20
+```
+
+The figure below shows parents' responses to the question, "Think of your parents when they were your age. Would you say you (and your family) are better, the same, or worse off financially than they were?" While differences across race are not very strong, Black parents respond slightly more positively than do white parents.
+
+```{r gg5, echo=FALSE, fig.align = 'center'}
+gg5
+```
+
+The figure below shows parents' responses to the question, "Overall, which one of the following best describes how well you are managing financially these days?" While there is some variation by borrower status, white parents report financial comfort and satisfaction more often than parents of color, with the exception of the "Others without SLs" group.
+
+```{r gg6, echo=FALSE, fig.align = 'center'}
+gg6
+```
+
+## The role of family
+
+The tables in this section explore some data on the support these borrowers receive from (or give to) their families.
+
+Table 12 shows that parents with student loans for a child's education are often not empty nesters. Very often among parents with these loans, children over 18 live with the parent: this ranges from 46 percent among white parents to 63 percent among Hispanic parents. Meanwhile, the frequency of parents living with their own parents is noticeably higher among parents of color compared to white parents.
+
+```{r kable10, echo=FALSE}
+kable10
+```
+
+Table 13 speaks to the frequency of adult children providing financial support to parents. Parents with student loans for a child's education receive help from adult children much more often than parents without these loans; bear in mind that the child's age may be a confounding variable here. Among parent-borrowers, Black and Hispanic parents are the most likely to receive this financial support from an adult child, at 51 percent each.
+
+```{r kable18, echo=FALSE}
+kable18
+```
+
+Table 14 shows what expenses are defrayed when parents receive financial support from outside the home. Among parent-borrowers, student loan bills and other educational expenses are frequently the focus, most often for Hispanic and white parents.
+
+```{r kable28, echo=FALSE}
+kable28
+```
+
+## Other financial challenges
+
+The tables in this section explore other financial challenges that parents, especially parent-borrowers, face.
+
+Across the board, those with student loans for a child's education are more likely to have outstanding unpaid credit card debt than those without the education-related debt. Nearly 3 in 4 Black parent-borrowers has outstanding unpaid credit card debt, though other groups are not far behind.
+
+```{r kable14, echo=FALSE}
+kable14
+```
+
+As indicated by the "Most or all of the time" column in Table 16, parent-borrowers are more likely to have ongoing unpaid balances than those without student loans for a child's education. Among those with student loans for a child's education, the rates of carrying an unpaid balance "Some of the time" or "Most of the time" is highest for Black parent-borrowers at 81 percent.
+
+```{r kable15, echo=FALSE}
+kable15
+```
+
+As one indicator of whether parent-borrowers are struggling with repayment, Table 17 shows how often parents' spending exceeds their incomes. The "More than your income" column shows that about 1 in 4 of all parent-borrowers of color are earning less than they spend, versus about 1 in 6 white parent-borrowers. Rates of spending more than one's income is higher among those with student loans for a child's education.
+
+```{r kable17, echo=FALSE}
+kable17
+```
+
+As seen in Table 18, the ability to pay all of one's monthly bills is lowest among Black parents, especially those with student loans for a child's education.
+
+```{r kable21, echo=FALSE}
+kable21
+```
