@@ -1,6 +1,6 @@
 # ParentPLUS-May2022
 
-This repository contains a number of data files and an R Markdown file ("TCF Parent PLUS Analysis.Rmd") that together reproduce the original analysis in The Century Foundation's report "[Parent PLUS Borrowers: The Hidden Casualties of the Student Debt Crisis]([url](https://tcf.org/content/report/parent-plus-borrowers-the-hidden-casualties-of-the-student-debt-crisis/))," released May 31, 2022. This Markdown file is annotated to explain the what the analysis does and why. 
+This repository contains a number of data files and an R Markdown file ("TCF Parent PLUS Analysis.Rmd") that together reproduce the original analysis in The Century Foundation's report "Parent PLUS Borrowers: The Hidden Casualties of the Student Debt Crisis," released May 31, 2022. This Markdown file is annotated to explain the what the analysis does and why. 
 
 This repository also contains a file that reproduces the report's analysis of data from the Survey of Household Economics and Decisionmaking ("Parent-Loans-SHED-May2022"). 
 
