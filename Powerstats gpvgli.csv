@@ -1,0 +1,81 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"Cumulative Parent PLUS Loans by Race/ethnicity (with multiple). "
+
+"","Cumulative Parent PLUS Loans"
+"","129 <= X <= 17150","17151 <= X <= 204558","Total"
+"","(%)","(%)"
+
+"ESTIMATES"
+"Total","43.8665","56.1335","100%"
+"Race/ethnicity (with multiple)"
+"White","42.1310","57.8690","100%"
+"Black or African American","55.6204","44.3796","100%"
+"Hispanic or Latino","52.1635","47.8365","100%"
+"Asian","28.6245","71.3755","100%"
+"American Indian or Alaska Native","‡","‡","100%"
+"Native Hawaiian/other Pacific Islander","‡","‡","100%"
+"More than one race","36.4326","63.5674","100%"
+
+"STANDARD ERRORS (BRR)"
+"Total","1.35730","1.35730"
+"Race/ethnicity (with multiple)"
+"White","1.63935","1.63935"
+"Black or African American","3.92067","3.92067"
+"Hispanic or Latino","4.12096","4.12096"
+"Asian","5.12032","5.12032"
+"American Indian or Alaska Native","‡","‡"
+"Native Hawaiian/other Pacific Islander","‡","‡"
+"More than one race","7.99420","7.99420"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","3.09416","2.41799"
+"Race/ethnicity (with multiple)"
+"White","3.89108","2.83287"
+"Black or African American","7.04898","8.83441"
+"Hispanic or Latino","7.90009","8.61468"
+"Asian","17.88792","7.17378"
+"American Indian or Alaska Native","‡","‡"
+"Native Hawaiian/other Pacific Islander","‡","‡"
+"More than one race","21.94245","12.57593"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","135818","173799","309617"
+"Race/ethnicity (with multiple)"
+"White","88414","121441","209855"
+"Black or African American","21008","16762","37770"
+"Hispanic or Latino","16417","15055","31472"
+"Asian","4742","11825","16567"
+"American Indian or Alaska Native","‡","‡","‡"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡"
+"More than one race","4390","7660","12050"
+
+"CONFIDENCE INTERVALS"
+"","Cumulative Parent PLUS Loans"
+"","129 <= X <= 17150","","17151 <= X <= 204558","","Total"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","43.8665","41.21 - 46.53","56.1335","53.47 - 58.79","100%"
+"Race/ethnicity (with multiple)"
+"White","42.1310","38.92 - 45.34","57.8690","54.66 - 61.08","100%"
+"Black or African American","55.6204","47.94 - 63.30","44.3796","36.70 - 52.06","100%"
+"Hispanic or Latino","52.1635","44.09 - 60.24","47.8365","39.76 - 55.91","100%"
+"Asian","28.6245","18.59 - 38.66","71.3755","61.34 - 81.41","100%"
+"American Indian or Alaska Native","‡","‡","‡","‡","100%"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡","‡","100%"
+"More than one race","36.4326","20.76 - 52.10","63.5674","47.90 - 79.24","100%"
+
+"‡ Reporting standards not met"
+
+"The names of the variables used in this table are: PLUSCUM and RACE. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTA000"
+
+"NOTE: Detail may not sum to totals because of rounding."
+
+"Source: U.S. Department of Education, National Center for Education Statistics, Baccalaureate and Beyond: 2016/2017 (B&B)."
+
+"Computation by NCES PowerStats on 5/25/2022 at 06:17:43 UTC."
+
+"The table number to retrieve results is gpvgli"

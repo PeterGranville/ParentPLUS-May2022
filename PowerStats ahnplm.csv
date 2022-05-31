@@ -1,0 +1,76 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"FM expected family contribution - composite 1995-96 by Race/ethnicity of student. Filtered by PLUS loan total 1995-96 (X >= 105). "
+
+"","FM expected family contribution - composite 1995-96"
+"","0 <= X <= 0","1 <= X <= 95000","Total"
+"","(%)","(%)"
+
+"ESTIMATES"
+"Total","9.4366","90.5634","100%"
+"Race/ethnicity of student"
+"White, non-Hispanic","6.5293","93.4707","100%"
+"Black, non-Hispanic","19.7614","80.2386","100%"
+"Hispanic","17.6002","82.3998","100%"
+"Asian/Pacific Islander","15.6517","84.3483","100%"
+"American Indian/Alaskan Native","‡","‡","100%"
+"Other","‡","‡","100%"
+
+"STANDARD ERRORS (BRR)"
+"Total","1.03263","1.03263"
+"Race/ethnicity of student"
+"White, non-Hispanic","1.29717","1.29717"
+"Black, non-Hispanic","3.70839","3.70839"
+"Hispanic","3.45448","3.45448"
+"Asian/Pacific Islander","4.02408","4.02408"
+"American Indian/Alaskan Native","‡","‡"
+"Other","‡","‡"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","10.94277","1.14023"
+"Race/ethnicity of student"
+"White, non-Hispanic","19.86681","1.38778"
+"Black, non-Hispanic","18.76585","4.62170"
+"Hispanic","19.62750","4.19234"
+"Asian/Pacific Islander","25.71018","4.77080"
+"American Indian/Alaskan Native","‡","‡"
+"Other","‡","‡"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","39335","377497","416832"
+"Race/ethnicity of student"
+"White, non-Hispanic","20335","291113","311448"
+"Black, non-Hispanic","10556","42861","53417"
+"Hispanic","4502","21078","25580"
+"Asian/Pacific Islander","3437","18525","21962"
+"American Indian/Alaskan Native","‡","‡","‡"
+"Other","‡","‡","‡"
+
+"CONFIDENCE INTERVALS"
+"","FM expected family contribution - composite 1995-96"
+"","0 <= X <= 0","","1 <= X <= 95000","","Total"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","9.4366","7.36 - 11.51","90.5634","88.49 - 92.64","100%"
+"Race/ethnicity of student"
+"White, non-Hispanic","6.5293","3.92 - 9.14","93.4707","90.86 - 96.08","100%"
+"Black, non-Hispanic","19.7614","12.31 - 27.21","80.2386","72.79 - 87.69","100%"
+"Hispanic","17.6002","10.66 - 24.54","82.3998","75.46 - 89.34","100%"
+"Asian/Pacific Islander","15.6517","7.57 - 23.74","84.3483","76.26 - 92.43","100%"
+"American Indian/Alaskan Native","‡","‡","‡","‡","100%"
+"Other","‡","‡","‡","‡","100%"
+
+"‡ Reporting standards not met"
+
+"The names of the variables used in this table are: EFC4, RACE, and  PLUSAMT3. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTA000"
+
+"NOTE: Detail may not sum to totals because of rounding."
+
+"Source: U.S. Department of Education, National Center for Education Statistics, National Postsecondary Student Aid Study: 1996 Undergraduates (NPSAS:UG)."
+
+"Computation by NCES PowerStats on 5/3/2022 at 21:40:20 UTC."
+
+"The table number to retrieve results is ahnplm"

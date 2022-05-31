@@ -1,0 +1,72 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"Annualized total salary for all current jobs, as of B&B:08/18 interview (average) with zeros, Cumulative PLUS amount (average) with zeros and Cumulative amount borrowed for education as of 2012 (average) with zeros by Race/ethnicity (with multiple). Filtered by [Cumulative PLUS amount (X >= 330) AND Employment status considering all current jobs, as of the B&B:08/18 interview (Employed full time, Employed part time, Unemployed)]. "
+
+"","Annualized total salary for all current jobs, as of B&B:08/18 interview","Cumulative PLUS amount","Cumulative amount borrowed for education as of 2012"
+"","( Average )","( Average )","( Average )"
+"ESTIMATES"
+"Total","71016.4920","23971.6860","50442.6757"
+"Race/ethnicity (with multiple)"
+"White","72213.2514","24938.5926","48647.0480"
+"Black or African American","66258.0326","16509.6055","55919.2416"
+"Hispanic or Latino","61743.1521","23884.2299","53327.5922"
+"Asian; Native Hawaiian / other Pacific Islander","76839.9175","23149.3072","65068.6465"
+"American Indian or Alaska Native","‡","‡","‡"
+"Other; More than one race","66871.1804","24276.2831","53875.5107"
+
+"STANDARD ERRORS (BRR)"
+"Total","1443.43598","642.36489","1670.63778"
+"Race/ethnicity (with multiple)"
+"White","1766.00786","773.52296","1849.12475"
+"Black or African American","3298.56439","1729.67006","4445.20548"
+"Hispanic or Latino","4258.39911","2304.77480","5070.95479"
+"Asian; Native Hawaiian / other Pacific Islander","5778.29025","3071.85845","7615.36377"
+"American Indian or Alaska Native","‡","‡","‡"
+"Other; More than one race","11162.43598","5307.86322","13165.17358"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","2.03254","2.67968","3.31195"
+"Race/ethnicity (with multiple)"
+"White","2.44555","3.10171","3.80110"
+"Black or African American","4.97836","10.47675","7.94933"
+"Hispanic or Latino","6.89696","9.64978","9.50906"
+"Asian; Native Hawaiian / other Pacific Islander","7.51991","13.26976","11.70358"
+"American Indian or Alaska Native","‡","‡","‡"
+"Other; More than one race","16.69245","21.86440","24.43629"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","212115","227259","227259"
+"Race/ethnicity (with multiple)"
+"White","161813","171642","171642"
+"Black or African American","20059","22011","22011"
+"Hispanic or Latino","14868","17174","17174"
+"Asian; Native Hawaiian / other Pacific Islander","9059","9742","9742"
+"American Indian or Alaska Native","‡","‡","‡"
+"Other; More than one race","5618","5835","5835"
+
+"CONFIDENCE INTERVALS"
+"","Annualized total salary for all current jobs, as of B&B:08/18 interview","","Cumulative PLUS amount","","Cumulative amount borrowed for education as of 2012"
+"","( Average )","","( Average )","","( Average )"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","71016.4920","68,187.36 - 73,845.63","23971.6860","22,712.65 - 25,230.72","50442.6757","47,168.23 - 53,717.13"
+"Race/ethnicity (with multiple)"
+"White","72213.2514","68,751.88 - 75,674.63","24938.5926","23,422.49 - 26,454.70","48647.0480","45,022.76 - 52,271.33"
+"Black or African American","66258.0326","59,792.85 - 72,723.22","16509.6055","13,119.45 - 19,899.76","55919.2416","47,206.64 - 64,631.84"
+"Hispanic or Latino","61743.1521","53,396.69 - 70,089.61","23884.2299","19,366.87 - 28,401.59","53327.5922","43,388.52 - 63,266.66"
+"Asian; Native Hawaiian / other Pacific Islander","76839.9175","65,514.47 - 88,165.37","23149.3072","17,128.46 - 29,170.15","65068.6465","50,142.53 - 79,994.76"
+"American Indian or Alaska Native","‡","‡","‡","‡","‡","‡"
+"Other; More than one race","66871.1804","44,992.81 - 88,749.55","24276.2831","13,872.87 - 34,679.70","53875.5107","28,071.77 - 79,679.25"
+
+"‡ Reporting standards not met"
+
+"The names of the variables used in this table are: B3INC18, PLUSCUM, B2BORAT, RACE, PLUSCUM, and  B3EMPSTAT18. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTH000"
+
+"Source: U.S. Department of Education, National Center for Education Statistics, Baccalaureate and Beyond: 2008/2018 (B&B)."
+
+"Computation by NCES PowerStats on 5/25/2022 at 06:27:58 UTC."
+
+"The table number to retrieve results is hrygwq"

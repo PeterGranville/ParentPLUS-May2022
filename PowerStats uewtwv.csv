@@ -1,0 +1,82 @@
+﻿"National Center for Education Statistics"
+
+"Variance estimation method: BRR"
+
+"Expected Family Contribution by Race/ethnicity (with multiple). Filtered by Direct PLUS Loans to parents (X >= 65). "
+
+"","Expected Family Contribution"
+"","0","$1-2,799","$2,800-7,999","$8,000-19,299","$19,300 or more","Total"
+"","(%)","(%)","(%)","(%)","(%)"
+
+"ESTIMATES"
+"Total","18.0133","13.9570","17.5382","23.9712","26.5202","100%"
+"Race/ethnicity (with multiple)"
+"White","8.5027","11.1274","16.8501","29.5622","33.9575","100%"
+"Black or African American","39.7678","16.8599","18.2922","12.4356","12.6446","100%"
+"Hispanic or Latino","26.6820","19.2515","18.7232","17.6729","17.6704","100%"
+"Asian","18.0705","18.2191","16.9068","29.8083","16.9953","100%"
+"American Indian or Alaska Native","‡","‡","‡","‡","‡","100%"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡","‡","‡","100%"
+"More than one race","19.2893 !","15.3216 !","18.6604","15.8580","30.8708","100%"
+
+"STANDARD ERRORS (BRR)"
+"Total","0.85525","0.86806","0.73305","0.88896","0.93504"
+"Race/ethnicity (with multiple)"
+"White","0.92505","1.07398","1.04311","1.26729","1.49021"
+"Black or African American","2.59491","2.09573","1.84314","1.73365","1.68633"
+"Hispanic or Latino","2.65086","2.42329","2.12373","1.84665","2.06561"
+"Asian","4.35057","4.54742","4.46725","5.24618","3.85029"
+"American Indian or Alaska Native","‡","‡","‡","‡","‡"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡","‡","‡"
+"More than one race","6.27131","4.69127","5.58897","3.86954","6.28965"
+
+"RELATIVE STANDARD ERRORS (%)"
+"Total","4.74789","6.21953","4.17973","3.70846","3.52576"
+"Race/ethnicity (with multiple)"
+"White","10.87945","9.65166","6.19053","4.28685","4.38847"
+"Black or African American","6.52517","12.43030","10.07608","13.94103","13.33634"
+"Hispanic or Latino","9.93500","12.58755","11.34274","10.44905","11.68970"
+"Asian","24.07555","24.95960","26.42278","17.59974","22.65506"
+"American Indian or Alaska Native","‡","‡","‡","‡","‡"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡","‡","‡"
+"More than one race","32.51194","30.61867","29.95103","24.40118","20.37411"
+
+"WEIGHTED SAMPLE SIZES"
+"Total","152088","117841","148077","202392","223913","844311"
+"Race/ethnicity (with multiple)"
+"White","41301","54050","81847","143594","164944","485736"
+"Black or African American","64906","27517","29855","20296","20637","163211"
+"Hispanic or Latino","32750","23630","22981","21692","21689","122742"
+"Asian","6860","6917","6418","11316","6452","37963"
+"American Indian or Alaska Native","‡","‡","‡","‡","‡","‡"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡","‡","‡","‡"
+"More than one race","5772","4585","5584","4746","9238","29925"
+
+"CONFIDENCE INTERVALS"
+"","Expected Family Contribution"
+"","0","","$1-2,799","","$2,800-7,999","","$8,000-19,299","","$19,300 or more","","Total"
+"","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval","Amount","95% Confidence Interval"
+"Total","18.0133","16.34 - 19.69","13.9570","12.26 - 15.66","17.5382","16.10 - 18.97","23.9712","22.23 - 25.71","26.5202","24.69 - 28.35","100%"
+"Race/ethnicity (with multiple)"
+"White","8.5027","6.69 - 10.32","11.1274","9.02 - 13.23","16.8501","14.81 - 18.89","29.5622","27.08 - 32.05","33.9575","31.04 - 36.88","100%"
+"Black or African American","39.7678","34.68 - 44.85","16.8599","12.75 - 20.97","18.2922","14.68 - 21.90","12.4356","9.04 - 15.83","12.6446","9.34 - 15.95","100%"
+"Hispanic or Latino","26.6820","21.49 - 31.88","19.2515","14.50 - 24.00","18.7232","14.56 - 22.89","17.6729","14.05 - 21.29","17.6704","13.62 - 21.72","100%"
+"Asian","18.0705","9.54 - 26.60","18.2191","9.31 - 27.13","16.9068","8.15 - 25.66","29.8083","19.53 - 40.09","16.9953","9.45 - 24.54","100%"
+"American Indian or Alaska Native","‡","‡","‡","‡","‡","‡","‡","‡","‡","‡","100%"
+"Native Hawaiian/other Pacific Islander","‡","‡","‡","‡","‡","‡","‡","‡","‡","‡","100%"
+"More than one race","19.2893 !","7.00 - 31.58","15.3216 !","6.13 - 24.52","18.6604","7.71 - 29.61","15.8580","8.27 - 23.44","30.8708","18.54 - 43.20","100%"
+
+"! Interpret data with caution. Estimate is unstable because the standard error represents more than 30 percent of the estimate."
+"‡ Reporting standards not met"
+
+"The names of the variables used in this table are: EFC, RACE, and  PLUSAMT. The variable names are unique identifiers. To locate these variables, enter the variable name in the search box."
+
+"The weight variable used to calculate the data is WTA000"
+
+"NOTE: Detail may not sum to totals because of rounding."
+
+"Source: U.S. Department of Education, National Center for Education Statistics, National Postsecondary Student Aid Study: 2016 Undergraduates (NPSAS:UG)."
+
+"Computation by NCES PowerStats on 5/3/2022 at 21:14:59 UTC."
+
+"The table number to retrieve results is uewtwv"
