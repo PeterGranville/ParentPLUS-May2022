@@ -6,7 +6,7 @@ This repository also contains a file that reproduces the report's analysis of da
 
 All data files needed to reproduce my analysis are either included in this repository or publicly available. The Markdown files indicate where to find online any files that were too large to include in the repository. 
 
-All data source used in this report are the property of: 
+All data sources used in this report are the property of: 
 - The U.S. Department of Education (IPEDS, College Scorecard, NCES Datalab surveys, and NCES Digest of Education Statistics) 
 - The U.S. Federal Reserve (Survey of Household Economics and Decisionmaking)
 - The Institute for Social Research at the University of Michigan (Panel Study of Income Dynamics) 
